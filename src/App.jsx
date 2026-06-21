@@ -47,11 +47,16 @@ function App() {
           position="bottom-right"
           toastOptions={{
             style: {
-              background: '#10b981',
-              color: '#fff',
-              border: 'none',
+              background: 'hsl(var(--card))',
+              color: 'hsl(var(--foreground))',
+              border: '1px solid hsl(var(--border))',
+              borderRadius: '0px',
             },
-            className: 'font-display font-medium tracking-wide',
+            className: 'font-display font-bold tracking-widest text-[11px] uppercase shadow-[0_8px_30px_rgb(0,0,0,0.8)]',
+            classNames: {
+              success: '!border-l-[3px] !border-l-primary',
+              error: '!border-l-[3px] !border-l-destructive',
+            }
           }}
         />
       </QueryClientProvider>
