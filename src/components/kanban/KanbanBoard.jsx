@@ -25,12 +25,12 @@ function KanbanCard({ uni, onClick }) {
           <span
             className={`font-semibold tabular-nums ${
               days < 0
-                ? "text-red-400"
-                : days <= 7
-                  ? "text-amber-400"
+                ? "text-red-500"
+                : days <= 14
+                  ? "text-red-400"
                   : days <= 30
-                    ? "text-primary"
-                    : "text-muted-foreground"
+                    ? "text-amber-400"
+                    : "text-emerald-400"
             }`}
           >
             {days < 0
