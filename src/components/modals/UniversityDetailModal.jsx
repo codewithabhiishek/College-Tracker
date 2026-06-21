@@ -27,7 +27,7 @@ export default function UniversityDetailModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[560px] bg-card border-border p-0 gap-0">
         <DialogHeader className="px-6 pt-6 pb-4 border-b border-border">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between pr-8">
             <div>
               <DialogTitle className="font-display text-lg font-bold">
                 {university.name}
