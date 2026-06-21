@@ -17,7 +17,7 @@ import { useAuth } from "@clerk/clerk-react";
 export default function Dashboard() {
   const [view, setView] = useState("table");
   const [selectedUni, setSelectedUni] = useState(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
   const [showGlobalDocs, setShowGlobalDocs] = useState(false);
   const [editingUni, setEditingUni] = useState(null);
@@ -81,7 +81,7 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       refetchUnis();
-      setIsFormOpen(false);
+      setFormOpen(false);
       setEditingUni(null);
       toast.success("University added");
     },
@@ -103,7 +103,7 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       refetchUnis();
-      setIsFormOpen(false);
+      setFormOpen(false);
       setEditingUni(null);
       setSelectedUni(null);
       toast.success("University updated");
