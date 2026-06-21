@@ -125,7 +125,7 @@ export default function UniversityFormModal({
                 Deadline
               </Label>
               <Input
-                type="datetime-local"
+                type="date"
                 value={form.deadline}
                 onChange={(e) => update("deadline", e.target.value)}
                 className="mt-1 bg-background border-border text-sm"
