@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClientInstance } from "@/lib/query-client";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
@@ -43,7 +43,17 @@ function App() {
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </Router>
-        <Toaster />
+        <Toaster 
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: '#10b981',
+              color: '#fff',
+              border: 'none',
+            },
+            className: 'font-display font-medium tracking-wide',
+          }}
+        />
       </QueryClientProvider>
     </ClerkProvider>
   );

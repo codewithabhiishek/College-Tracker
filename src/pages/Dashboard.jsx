@@ -28,7 +28,7 @@ export default function Dashboard() {
   const queryClient = useQueryClient();
 
   // Fetch Universities
-  const { data: universities = [], refetch: refetchUnis } = useQuery({
+  const { data: universities = [], refetch: refetchUnis, isLoading: unisIsLoading } = useQuery({
     queryKey: ["universities"],
     queryFn: async () => {
       const token = await getToken();
@@ -41,7 +41,7 @@ export default function Dashboard() {
   });
 
   // Fetch Global Documents
-  const { data: globalDocs = [] } = useQuery({
+  const { data: globalDocs = [], isLoading: docsIsLoading } = useQuery({
     queryKey: ["globalDocs"],
     queryFn: async () => {
       const token = await getToken();
@@ -254,24 +254,35 @@ export default function Dashboard() {
 
           {/* Content */}
           <main className="flex-1 overflow-hidden relative">
-          {view === "table" && (
-            <UniversityTable
-              universities={filteredUnis}
-              onRowClick={handleRowClick}
-            />
-          )}
-          {view === "kanban" && (
-            <KanbanBoard
-              universities={filteredUnis}
-              onCardClick={handleRowClick}
-            />
-          )}
-          {view === "calendar" && (
-            <CalendarView
-              universities={filteredUnis}
-              onEventClick={handleRowClick}
-              onDateSelect={handleDateSelect}
-            />
+          {(unisIsLoading || docsIsLoading) ? (
+            <div className="p-8 space-y-4 animate-pulse">
+              <div className="h-10 bg-secondary/30 rounded w-full"></div>
+              <div className="h-16 bg-secondary/20 rounded w-full"></div>
+              <div className="h-16 bg-secondary/10 rounded w-full"></div>
+              <div className="h-16 bg-secondary/5 rounded w-full"></div>
+            </div>
+          ) : (
+            <>
+              {view === "table" && (
+                <UniversityTable
+                  universities={filteredUnis}
+                  onRowClick={handleRowClick}
+                />
+              )}
+              {view === "kanban" && (
+                <KanbanBoard
+                  universities={filteredUnis}
+                  onCardClick={handleRowClick}
+                />
+              )}
+              {view === "calendar" && (
+                <CalendarView
+                  universities={filteredUnis}
+                  onEventClick={handleRowClick}
+                  onDateSelect={handleDateSelect}
+                />
+              )}
+            </>
           )}
         </main>
         </div>
