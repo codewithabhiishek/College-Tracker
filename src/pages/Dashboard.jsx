@@ -12,97 +12,137 @@ import CalendarView from "@/components/calendar/CalendarView";
 import UniversityFormModal from "@/components/modals/UniversityFormModal";
 import UniversityDetailModal from "@/components/modals/UniversityDetailModal";
 import GlobalDocsPanel from "@/components/panels/GlobalDocsPanel";
+import { useAuth } from "@clerk/clerk-react";
 
 export default function Dashboard() {
   const [view, setView] = useState("table");
-  const [showGlobalDocs, setShowGlobalDocs] = useState(true);
-  const [formOpen, setFormOpen] = useState(false);
-  const [detailOpen, setDetailOpen] = useState(false);
   const [selectedUni, setSelectedUni] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [showGlobalDocs, setShowGlobalDocs] = useState(false);
   const [editingUni, setEditingUni] = useState(null);
 
+  const { getToken } = useAuth();
   const queryClient = useQueryClient();
 
-  // Mock Data Generators
-  const getMockUnis = async () => {
-    return [
-      { id: "1", name: "Johannes Kepler University", country: "Austria", status: "preparing", deadline: "2024-12-01T23:59" },
-      { id: "2", name: "University of Innsbruck", country: "Austria", status: "preparing", deadline: "2024-12-01T17:00" },
-      { id: "3", name: "University of Salzburg", country: "Austria", status: "researching", deadline: "2025-01-15T12:00" },
-      { id: "4", name: "TU Wien", country: "Austria", status: "preparing", deadline: "2025-02-01T23:59" },
-      { id: "5", name: "TU Graz", country: "Austria", status: "researching", deadline: "2025-03-01T23:59" },
-      { id: "6", name: "University of Klagenfurt", country: "Austria", status: "researching", deadline: "2025-04-01T15:00" },
-      { id: "7", name: "University of Padua", country: "Italy", status: "researching", deadline: "2025-04-15T23:59" },
-    ];
-  };
-
-  const getMockUniDocs = async () => {
-    return [];
-  };
-
-  const getMockGlobalDocs = async () => {
-    return [
-      { id: "1", doc_name: "Passport", is_ready: true },
-      { id: "2", doc_name: "IELTS", is_ready: false },
-      { id: "3", doc_name: "APS", is_ready: false },
-      { id: "4", doc_name: "SOP", is_ready: false },
-      { id: "5", doc_name: "CV/Resume", is_ready: false },
-      { id: "6", doc_name: "LOR", is_ready: false },
-    ];
-  };
-
-  // Queries
-  const { data: universities = [] } = useQuery({
+  // Fetch Universities
+  const { data: universities = [], refetch: refetchUnis } = useQuery({
     queryKey: ["universities"],
-    queryFn: getMockUnis,
+    queryFn: async () => {
+      const token = await getToken();
+      const res = await fetch("/api/universities", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch universities");
+      return res.json();
+    },
   });
 
+  // Fetch Global Documents
+  const { data: globalDocs = [], refetch: refetchDocs } = useQuery({
+    queryKey: ["globalDocs"],
+    queryFn: async () => {
+      const token = await getToken();
+      const res = await fetch("/api/documents", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch documents");
+      return res.json();
+    },
+  });
+
+  // Fetch Uni Documents
   const { data: uniDocs = [] } = useQuery({
     queryKey: ["uniDocs"],
-    queryFn: getMockUniDocs,
-  });
-
-  const { data: globalDocs = [] } = useQuery({
-    queryKey: ["globalDocs"],
-    queryFn: getMockGlobalDocs,
+    queryFn: async () => {
+      const token = await getToken();
+      const res = await fetch("/api/university-docs", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to fetch uni docs");
+      return res.json();
+    },
   });
 
   // Mutations
   const createUni = useMutation({
-    mutationFn: async (data) => data,
+    mutationFn: async (data) => {
+      const token = await getToken();
+      const res = await fetch("/api/universities", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to create");
+      return res.json();
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["universities"] });
-      setFormOpen(false);
+      refetchUnis();
+      setIsFormOpen(false);
       setEditingUni(null);
+      toast.success("University added");
     },
   });
 
   const updateUni = useMutation({
-    mutationFn: async ({ id, data }) => data,
+    mutationFn: async (data) => {
+      const token = await getToken();
+      const res = await fetch("/api/universities", {
+        method: "PUT",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to update");
+      return res.json();
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["universities"] });
-      setFormOpen(false);
+      refetchUnis();
+      setIsFormOpen(false);
       setEditingUni(null);
-      // refresh detail if open
-      if (selectedUni) {
-        queryClient.invalidateQueries({ queryKey: ["universities"] });
-      }
+      setSelectedUni(null);
+      toast.success("University updated");
     },
   });
 
   const deleteUni = useMutation({
-    mutationFn: async (id) => id,
+    mutationFn: async (id) => {
+      const token = await getToken();
+      const res = await fetch("/api/universities", {
+        method: "DELETE",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        },
+        body: JSON.stringify({ id }),
+      });
+      if (!res.ok) throw new Error("Failed to delete");
+      return res.json();
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["universities"] });
-      queryClient.invalidateQueries({ queryKey: ["uniDocs"] });
-      setDetailOpen(false);
+      refetchUnis();
       setSelectedUni(null);
+      setDetailOpen(false);
+      toast.success("University deleted");
     },
   });
 
   // UniDoc mutations
   const createUniDoc = useMutation({
-    mutationFn: async (data) => data,
+    mutationFn: async (data) => {
+      const token = await getToken();
+      const res = await fetch("/api/university-docs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data),
+      });
+      return res.json();
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["uniDocs"] }),
   });
 

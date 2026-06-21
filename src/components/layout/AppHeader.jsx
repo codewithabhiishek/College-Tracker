@@ -1,5 +1,6 @@
 import { LayoutGrid, Table2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { UserButton } from "@clerk/clerk-react";
 
 export default function AppHeader({
   view,
@@ -80,6 +81,9 @@ export default function AppHeader({
             </svg>
             Calendar
           </button>
+        </div>
+        <div className="ml-4 pl-4 border-l border-border flex items-center">
+          <UserButton afterSignOutUrl="/login" />
         </div>
       </div>
     </header>
