@@ -1,12 +1,16 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
+import { format } from 'date-fns';
+import { X } from 'lucide-react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { statusConfig } from '@/lib/statusConfig';
 
 const localizer = momentLocalizer(moment);
 
 export default function CalendarView({ universities, onEventClick, onDateSelect }) {
+  const [showMoreData, setShowMoreData] = useState(null);
+
   const events = useMemo(() => {
     return universities
       .filter((u) => u.deadline)
@@ -47,7 +51,7 @@ export default function CalendarView({ universities, onEventClick, onDateSelect 
   };
 
   return (
-    <div className="h-full p-4">
+    <div className="h-full p-4 relative">
       <div className="h-full bg-card border border-border p-4">
         <Calendar
           localizer={localizer}
@@ -65,9 +69,55 @@ export default function CalendarView({ universities, onEventClick, onDateSelect 
             }
           }}
           eventPropGetter={eventStyleGetter}
-          popup
+          popup={false}
+          onShowMore={(events, date) => setShowMoreData({ events, date })}
         />
       </div>
+
+      {showMoreData && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm" 
+          onClick={() => setShowMoreData(null)}
+        >
+          <div 
+            className="w-full max-w-sm bg-card border border-border shadow-[0_8px_30px_rgb(0,0,0,0.8)] p-6 relative flex flex-col max-h-[80vh]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => setShowMoreData(null)}
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="font-display text-base font-bold tracking-widest mb-6 text-foreground uppercase border-b border-border pb-2">
+              {format(showMoreData.date, "dd MMM yyyy")}
+            </h3>
+            <div className="overflow-y-auto pr-2 flex flex-col gap-3">
+              {showMoreData.events.map((evt) => {
+                const styleObj = eventStyleGetter(evt).style;
+                return (
+                  <div
+                    key={evt.id}
+                    onClick={() => {
+                      setShowMoreData(null);
+                      onEventClick(evt.resource);
+                    }}
+                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                    style={{
+                      ...styleObj,
+                      padding: "10px 12px",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {evt.title}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
       {/* We need some custom styles to override big-calendar's white backgrounds for dark mode */}
       <style>{`
         .rbc-calendar {
