@@ -18,7 +18,7 @@ export default function CalendarView({ universities, onEventClick }) {
           title: u.name,
           start: deadlineDate,
           end: deadlineDate,
-          allDay: false,
+          allDay: true,
           resource: u,
         };
       });
@@ -58,7 +58,7 @@ export default function CalendarView({ universities, onEventClick }) {
           startAccessor="start"
           endAccessor="end"
           style={{ height: '100%' }}
-          views={['month', 'week', 'day', 'agenda']}
+          views={['month', 'agenda']}
           onSelectEvent={(event) => onEventClick(event.resource)}
           eventPropGetter={eventStyleGetter}
           popup
