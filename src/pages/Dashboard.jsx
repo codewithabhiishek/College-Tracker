@@ -83,6 +83,7 @@ export default function Dashboard() {
       refetchUnis();
       setFormOpen(false);
       setEditingUni(null);
+      setInitialDate(null);
       toast.success("University added");
     },
   });
@@ -105,6 +106,7 @@ export default function Dashboard() {
       refetchUnis();
       setFormOpen(false);
       setEditingUni(null);
+      setInitialDate(null);
       setSelectedUni(null);
       toast.success("University updated");
     },
@@ -179,6 +181,16 @@ export default function Dashboard() {
   const handleRowClick = (uni) => {
     setSelectedUni(uni);
     setDetailOpen(true);
+  };
+
+  const handleDateSelect = (date) => {
+    // Make sure we pass an ISO string without timezone shifts
+    const localIso = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+      .toISOString()
+      .split("T")[0];
+    setEditingUni(null);
+    setInitialDate(localIso);
+    setFormOpen(true);
   };
 
   const handleSaveUni = (data) => {
@@ -283,6 +295,7 @@ export default function Dashboard() {
             <CalendarView
               universities={filteredUnis}
               onEventClick={handleRowClick}
+              onDateSelect={handleDateSelect}
             />
           )}
         </main>
@@ -299,7 +312,11 @@ export default function Dashboard() {
               })
             }
             onAdd={(name) =>
-              createGlobalDoc.mutate({ doc_name: name, is_ready: false })
+              createGlobalDoc.mutate({
+                university_id: "global",
+                doc_name: name,
+                is_ready: false,
+              })
             }
             onDelete={(id) => deleteGlobalDoc.mutate(id)}
             onClose={() => setShowGlobalDocs(false)}
@@ -314,6 +331,7 @@ export default function Dashboard() {
         university={editingUni}
         onSave={handleSaveUni}
         isSaving={createUni.isPending || updateUni.isPending}
+        initialDate={initialDate}
       />
 
       <UniversityDetailModal

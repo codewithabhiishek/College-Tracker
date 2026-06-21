@@ -37,6 +37,7 @@ export default function UniversityFormModal({
   university,
   onSave,
   isSaving,
+  initialDate,
 }) {
   const [form, setForm] = useState(emptyForm);
   const isEdit = !!university;
@@ -55,9 +56,9 @@ export default function UniversityFormModal({
         notes: university.notes || "",
       });
     } else {
-      setForm(emptyForm);
+      setForm({ ...emptyForm, deadline: initialDate || "" });
     }
-  }, [university, open]);
+  }, [university, open, initialDate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
