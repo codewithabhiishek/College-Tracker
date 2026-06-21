@@ -41,7 +41,7 @@ export default function Dashboard() {
   });
 
   // Fetch Global Documents
-  const { data: globalDocs = [], refetch: refetchDocs } = useQuery({
+  const { data: globalDocs = [] } = useQuery({
     queryKey: ["globalDocs"],
     queryFn: async () => {
       const token = await getToken();
@@ -49,19 +49,6 @@ export default function Dashboard() {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch documents");
-      return res.json();
-    },
-  });
-
-  // Fetch Uni Documents
-  const { data: uniDocs = [] } = useQuery({
-    queryKey: ["uniDocs"],
-    queryFn: async () => {
-      const token = await getToken();
-      const res = await fetch("/api/university-docs", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Failed to fetch uni docs");
       return res.json();
     },
   });
@@ -136,30 +123,6 @@ export default function Dashboard() {
     },
   });
 
-  // UniDoc mutations
-  const createUniDoc = useMutation({
-    mutationFn: async (data) => {
-      const token = await getToken();
-      const res = await fetch("/api/university-docs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify(data),
-      });
-      return res.json();
-    },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["uniDocs"] }),
-  });
-
-  const updateUniDoc = useMutation({
-    mutationFn: async ({ id, data }) => data,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["uniDocs"] }),
-  });
-
-  const deleteUniDoc = useMutation({
-    mutationFn: async (id) => id,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["uniDocs"] }),
-  });
-
   // GlobalDoc mutations
   const createGlobalDoc = useMutation({
     mutationFn: async (data) => data,
@@ -168,7 +131,7 @@ export default function Dashboard() {
   });
 
   const updateGlobalDoc = useMutation({
-    mutationFn: async ({ id, data }) => data,
+    mutationFn: async ({ data }) => data,
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["globalDocs"] }),
   });
@@ -213,23 +176,6 @@ export default function Dashboard() {
     if (!selectedUni) return;
     deleteUni.mutate(selectedUni.id);
   };
-
-  const handleAddUniDoc = (docName) => {
-    if (!selectedUni) return;
-    createUniDoc.mutate({
-      university_id: selectedUni.id,
-      doc_name: docName,
-      is_ready: false,
-    });
-  };
-
-  const handleToggleUniDoc = (doc) => {
-    updateUniDoc.mutate({ id: doc.id, data: { is_ready: !doc.is_ready } });
-  };
-
-  const selectedUniDocs = uniDocs.filter(
-    (d) => d.university_id === selectedUni?.id,
-  );
 
   // Keep selectedUni in sync with latest data
   const currentSelectedUni = selectedUni
