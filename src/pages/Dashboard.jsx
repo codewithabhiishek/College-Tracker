@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 // Removed base44 import
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ export default function Dashboard() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [showGlobalDocs, setShowGlobalDocs] = useState(false);
   const [editingUni, setEditingUni] = useState(null);
+  const [initialDate, setInitialDate] = useState(null);
 
   const { getToken } = useAuth();
   const queryClient = useQueryClient();
