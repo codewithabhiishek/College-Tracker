@@ -50,8 +50,8 @@ export default function CalendarView({ universities, onEventClick }) {
   };
 
   return (
-    <div className="h-full w-full p-4 bg-background">
-      <div className="h-full rounded-md border border-border p-4 bg-card">
+    <div className="h-full w-full p-4 bg-background overflow-auto flex justify-center items-start">
+      <div className="w-full max-w-6xl h-[700px] rounded-md border border-border p-4 bg-card shadow-sm">
         <Calendar
           localizer={localizer}
           events={events}
