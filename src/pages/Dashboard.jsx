@@ -183,7 +183,7 @@ export default function Dashboard() {
 
   const handleSaveUni = (data) => {
     if (editingUni) {
-      updateUni.mutate({ id: editingUni.id, data });
+      updateUni.mutate({ id: editingUni.id, ...data });
     } else {
       createUni.mutate(data);
     }
