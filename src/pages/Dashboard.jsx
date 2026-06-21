@@ -125,19 +125,46 @@ export default function Dashboard() {
 
   // GlobalDoc mutations
   const createGlobalDoc = useMutation({
-    mutationFn: async (data) => data,
+    mutationFn: async (data) => {
+      const token = await getToken();
+      const res = await fetch("/api/documents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to create document");
+      return res.json();
+    },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["globalDocs"] }),
   });
 
   const updateGlobalDoc = useMutation({
-    mutationFn: async ({ data }) => data,
+    mutationFn: async ({ id, data }) => {
+      const token = await getToken();
+      const res = await fetch("/api/documents", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ id, ...data }),
+      });
+      if (!res.ok) throw new Error("Failed to update document");
+      return res.json();
+    },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["globalDocs"] }),
   });
 
   const deleteGlobalDoc = useMutation({
-    mutationFn: async (id) => id,
+    mutationFn: async (id) => {
+      const token = await getToken();
+      const res = await fetch("/api/documents", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ id }),
+      });
+      if (!res.ok) throw new Error("Failed to delete document");
+      return res.json();
+    },
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["globalDocs"] }),
   });
