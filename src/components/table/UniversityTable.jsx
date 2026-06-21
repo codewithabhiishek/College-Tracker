@@ -29,12 +29,16 @@ export default function UniversityTable({ universities, onRowClick }) {
     return 0;
   });
 
-  const SortHeader = ({ label, sortKeyName, className = "" }) => (
+  const SortHeader = ({ label, sortKeyName, align = "left", className = "" }) => (
     <th
-      className={`px-4 py-3 text-left text-[10px] uppercase tracking-widest text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none ${className}`}
+      className={`px-4 py-3 text-[10px] uppercase tracking-widest text-muted-foreground cursor-pointer hover:text-foreground transition-colors select-none ${
+        align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left"
+      } ${className}`}
       onClick={() => handleSort(sortKeyName)}
     >
-      <span className="flex items-center gap-1">
+      <span className={`flex items-center gap-1 ${
+        align === "center" ? "justify-center" : align === "right" ? "justify-end" : "justify-start"
+      }`}>
         {label}
         <ArrowUpDown
           className={`w-3 h-3 ${sortKey === sortKeyName ? "text-primary" : "text-muted-foreground/40"}`}
@@ -62,10 +66,8 @@ export default function UniversityTable({ universities, onRowClick }) {
                 />
               </span>
             </th>
+            <SortHeader label="Status" sortKeyName="status" align="center" />
             <th className="px-4 py-3 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
-              Status
-            </th>
-            <th className="px-4 py-3 text-left text-[10px] uppercase tracking-widest text-muted-foreground">
               Portal
             </th>
           </tr>
@@ -84,21 +86,21 @@ export default function UniversityTable({ universities, onRowClick }) {
               <tr
                 key={uni.id}
                 onClick={() => onRowClick(uni)}
-                className="border-b border-border/50 hover:bg-secondary/40 cursor-pointer transition-colors group even:bg-muted/10"
+                className="h-[72px] border-b border-border/50 hover:bg-secondary/40 cursor-pointer transition-colors group even:bg-muted/10"
               >
                 <td className="px-4 py-3">
-                  <div className="font-display text-base font-bold tracking-wide text-foreground group-hover:text-primary transition-colors">
+                  <div className="font-display text-base font-bold tracking-wide text-foreground group-hover:text-primary transition-colors line-clamp-1">
                     {uni.name}
                   </div>
-                  {uni.program && (
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      {uni.program}
-                    </div>
-                  )}
+                  <div className="text-xs text-muted-foreground mt-0.5 line-clamp-1 h-4">
+                    {uni.program || " "}
+                  </div>
                 </td>
-                <td className="px-4 py-3 text-muted-foreground/70 text-[10px] uppercase tracking-wider flex items-center h-full pt-4">
-                  {flag && <span className="text-base mr-2">{flag}</span>}
-                  <span>{countryName}</span>
+                <td className="px-4 py-3 text-muted-foreground/70 text-[10px] uppercase tracking-wider">
+                  <div className="flex items-center h-full">
+                    {flag && <span className="text-base mr-2">{flag}</span>}
+                    <span className="line-clamp-1">{countryName}</span>
+                  </div>
                 </td>
                 <td className="px-4 py-3 text-xs text-muted-foreground/80">
                   {uni.deadline
@@ -138,21 +140,23 @@ export default function UniversityTable({ universities, onRowClick }) {
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  {uni.portal_url ? (
-                    <a
-                      href={uni.portal_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
-                  ) : (
-                    <span className="text-muted-foreground/30 text-[11px] uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1">
-                      <span className="text-lg leading-none mb-0.5">+</span> Add Portal
-                    </span>
-                  )}
+                  <div className="flex justify-center">
+                    {uni.portal_url ? (
+                      <a
+                        href={uni.portal_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground/30 text-[11px] uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1">
+                        <span className="text-lg leading-none mb-0.5">+</span> Add Portal
+                      </span>
+                    )}
+                  </div>
                 </td>
               </tr>
             );
