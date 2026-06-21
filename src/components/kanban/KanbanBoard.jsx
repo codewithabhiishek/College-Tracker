@@ -9,7 +9,7 @@ function KanbanCard({ uni, onClick }) {
   return (
     <div
       onClick={() => onClick(uni)}
-      className="border border-border bg-background p-3 cursor-pointer hover:border-primary/40 transition-colors group"
+      className="border border-border bg-background p-3 cursor-grab active:cursor-grabbing hover:border-primary/40 transition-colors group"
     >
       <div className="font-display font-medium text-sm text-foreground group-hover:text-primary transition-colors">
         {uni.name}
@@ -71,7 +71,7 @@ export default function KanbanBoard({ universities, onCardClick }) {
         const unis = universities.filter((u) => u.status === status);
 
         return (
-          <div key={status} className="min-w-[220px] w-[220px] flex-shrink-0">
+          <div key={status} className="min-w-[280px] w-[280px] flex-shrink-0">
             <div className="flex items-center gap-2 px-2 py-2 mb-2 border-b border-border">
               <div className={`w-2 h-2 ${cfg.dot}`} />
               <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-display font-medium">
