@@ -1,6 +1,6 @@
 import { statusConfig } from "@/lib/statusConfig";
 
-export default function SummaryStats({ universities, globalDocs }) {
+export default function SummaryStats({ universities, globalDocs, statusFilter, setStatusFilter }) {
   const statusCounts = {};
   const allStatuses = [
     "researching",
@@ -29,13 +29,19 @@ export default function SummaryStats({ universities, globalDocs }) {
       {allStatuses.map((status) => {
         const cfg = statusConfig[status];
         const count = statusCounts[status];
+        const isActive = statusFilter === status;
         return (
           <div
             key={status}
-            className="flex items-center gap-1.5 px-2 py-1 border border-border"
+            onClick={() => setStatusFilter(isActive ? null : status)}
+            className={`flex items-center gap-1.5 px-2 py-1 border transition-colors cursor-pointer select-none ${
+              isActive 
+                ? "border-primary bg-primary/10" 
+                : "border-border hover:bg-secondary/50"
+            }`}
           >
             <div className={`w-1.5 h-1.5 ${cfg.dot}`} />
-            <span className="uppercase tracking-wider text-muted-foreground">
+            <span className={`uppercase tracking-wider ${isActive ? "text-primary" : "text-muted-foreground"}`}>
               {cfg.short}
             </span>
             <span className="text-foreground font-semibold">{count}</span>

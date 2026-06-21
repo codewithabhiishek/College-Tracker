@@ -62,7 +62,9 @@ export default function UniversityTable({ universities, onRowClick }) {
                 />
               </span>
             </th>
-            <SortHeader label="Status" sortKeyName="status" />
+            <th className="px-4 py-3 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
+              Status
+            </th>
             <th className="px-4 py-3 text-left text-[10px] uppercase tracking-widest text-muted-foreground">
               Portal
             </th>
@@ -73,14 +75,19 @@ export default function UniversityTable({ universities, onRowClick }) {
             const days = daysRemaining(uni.deadline);
             const cfg = statusConfig[uni.status] || statusConfig.researching;
 
+            // Extract flag from country if present
+            const parts = uni.country ? uni.country.split(' ') : [];
+            const flag = parts.length > 1 && /[\uD83C][\uDDE6-\uDDFF][\uD83C][\uDDE6-\uDDFF]|[\uD83C][\uDF00-\uDFFF]/.test(parts[parts.length - 1]) ? parts.pop() : '';
+            const countryName = parts.join(' ') || uni.country;
+
             return (
               <tr
                 key={uni.id}
                 onClick={() => onRowClick(uni)}
-                className="border-b border-border/50 hover:bg-secondary/40 cursor-pointer transition-colors group"
+                className="border-b border-border/50 hover:bg-secondary/40 cursor-pointer transition-colors group even:bg-muted/10"
               >
                 <td className="px-4 py-3">
-                  <div className="font-display font-medium text-foreground group-hover:text-primary transition-colors">
+                  <div className="font-display text-base font-bold tracking-wide text-foreground group-hover:text-primary transition-colors">
                     {uni.name}
                   </div>
                   {uni.program && (
@@ -89,10 +96,11 @@ export default function UniversityTable({ universities, onRowClick }) {
                     </div>
                   )}
                 </td>
-                <td className="px-4 py-3 text-muted-foreground text-xs uppercase tracking-wider">
-                  {uni.country}
+                <td className="px-4 py-3 text-muted-foreground/70 text-[10px] uppercase tracking-wider flex items-center h-full pt-4">
+                  {flag && <span className="text-base mr-2">{flag}</span>}
+                  <span>{countryName}</span>
                 </td>
-                <td className="px-4 py-3 text-xs">
+                <td className="px-4 py-3 text-xs text-muted-foreground/80">
                   {uni.deadline
                     ? format(parseISO(uni.deadline), "dd MMM yyyy")
                     : "—"}
@@ -120,9 +128,10 @@ export default function UniversityTable({ universities, onRowClick }) {
                     <span className="text-muted-foreground/40">—</span>
                   )}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 text-center">
                   <span
-                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] uppercase tracking-wider border ${cfg.badge}`}
+                    className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider border rounded-md ${cfg.badge}`}
+                    style={{ minWidth: "90px" }}
                   >
                     <span className={`w-1.5 h-1.5 ${cfg.dot}`} />
                     {cfg.short}
@@ -140,7 +149,9 @@ export default function UniversityTable({ universities, onRowClick }) {
                       <ExternalLink className="w-4 h-4" />
                     </a>
                   ) : (
-                    <span className="text-muted-foreground/20">—</span>
+                    <span className="text-muted-foreground/30 text-[11px] uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1">
+                      <span className="text-lg leading-none mb-0.5">+</span> Add Portal
+                    </span>
                   )}
                 </td>
               </tr>

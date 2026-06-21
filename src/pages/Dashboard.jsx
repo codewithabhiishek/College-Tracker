@@ -222,6 +222,13 @@ export default function Dashboard() {
     ? universities.find((u) => u.id === selectedUni.id) || selectedUni
     : null;
 
+  const [statusFilter, setStatusFilter] = useState(null);
+
+  const filteredUnis = useMemo(() => {
+    if (!statusFilter) return universities;
+    return universities.filter(u => u.status === statusFilter);
+  }, [universities, statusFilter]);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <AppHeader
@@ -230,7 +237,12 @@ export default function Dashboard() {
         showGlobalDocs={showGlobalDocs}
         onToggleGlobalDocs={() => setShowGlobalDocs((s) => !s)}
       />
-      <SummaryStats universities={universities} globalDocs={globalDocs} />
+      <SummaryStats 
+        universities={universities} 
+        globalDocs={globalDocs}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+      />
 
       <div className="flex-1 flex overflow-hidden">
         {/* Main content */}
@@ -254,24 +266,26 @@ export default function Dashboard() {
           </div>
 
           {/* Content */}
-          <div className="flex-1 overflow-auto">
-            {view === "table" ? (
-              <UniversityTable
-                universities={universities}
-                onRowClick={handleRowClick}
-              />
-            ) : view === "kanban" ? (
-              <KanbanBoard
-                universities={universities}
-                onCardClick={handleRowClick}
-              />
-            ) : (
-              <CalendarView
-                universities={universities}
-                onEventClick={handleRowClick}
-              />
-            )}
-          </div>
+          <main className="flex-1 overflow-hidden relative">
+          {view === "table" && (
+            <UniversityTable
+              universities={filteredUnis}
+              onRowClick={handleRowClick}
+            />
+          )}
+          {view === "kanban" && (
+            <KanbanBoard
+              universities={filteredUnis}
+              onCardClick={handleRowClick}
+            />
+          )}
+          {view === "calendar" && (
+            <CalendarView
+              universities={filteredUnis}
+              onEventClick={handleRowClick}
+            />
+          )}
+        </main>
         </div>
 
         {/* Global docs panel */}
