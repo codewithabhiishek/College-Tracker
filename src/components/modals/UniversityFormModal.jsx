@@ -103,12 +103,25 @@ export default function UniversityFormModal({
               <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">
                 Country *
               </Label>
-              <Input
+              <Select
                 value={form.country}
-                onChange={(e) => update("country", e.target.value)}
-                required
-                className="mt-1 bg-background border-border text-sm"
-              />
+                onValueChange={(v) => update("country", v)}
+              >
+                <SelectTrigger className="mt-1 bg-background border-border text-sm">
+                  <SelectValue placeholder="Select Country" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Austria 🇦🇹">Austria 🇦🇹</SelectItem>
+                  <SelectItem value="Germany 🇩🇪">Germany 🇩🇪</SelectItem>
+                  <SelectItem value="Italy 🇮🇹">Italy 🇮🇹</SelectItem>
+                  <SelectItem value="France 🇫🇷">France 🇫🇷</SelectItem>
+                  <SelectItem value="USA 🇺🇸">USA 🇺🇸</SelectItem>
+                  <SelectItem value="UK 🇬🇧">UK 🇬🇧</SelectItem>
+                  <SelectItem value="Switzerland 🇨🇭">Switzerland 🇨🇭</SelectItem>
+                  <SelectItem value="Netherlands 🇳🇱">Netherlands 🇳🇱</SelectItem>
+                  <SelectItem value="Other 🌍">Other 🌍</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">
