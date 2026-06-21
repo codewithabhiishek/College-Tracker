@@ -47,7 +47,7 @@ export default function UniversityFormModal({
         name: university.name || "",
         country: university.country || "",
         program: university.program || "",
-        deadline: university.deadline || "",
+        deadline: university.deadline ? university.deadline.split('T')[0] : "",
         status: university.status || "researching",
         portal_url: university.portal_url || "",
         application_fee: university.application_fee ?? "",
