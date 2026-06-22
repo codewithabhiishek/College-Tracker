@@ -146,7 +146,7 @@ export default function UniversityFormModal({
               <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">
                 Deadline
               </Label>
-              <div className="flex gap-2 mt-1">
+              <div className="flex flex-col gap-2 mt-1">
                 <Select
                   value={
                     form.deadline === "9999-12-30"
@@ -169,7 +169,7 @@ export default function UniversityFormModal({
                     }
                   }}
                 >
-                  <SelectTrigger className="w-[140px] bg-background border-border text-xs">
+                  <SelectTrigger className="w-full bg-background border-border text-xs">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -185,7 +185,7 @@ export default function UniversityFormModal({
                     type="date"
                     value={form.deadline}
                     onChange={(e) => update("deadline", e.target.value)}
-                    className="flex-1 bg-background border-border text-sm h-9"
+                    className="w-full bg-background border-border text-sm h-9"
                   />
                 )}
               </div>
