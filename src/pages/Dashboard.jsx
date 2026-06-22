@@ -11,15 +11,13 @@ import UniversityTable from "@/components/table/UniversityTable";
 import KanbanBoard from "@/components/kanban/KanbanBoard";
 import CalendarView from "@/components/calendar/CalendarView";
 import UniversityFormModal from "@/components/modals/UniversityFormModal";
-import UniversityDetailModal from "@/components/modals/UniversityDetailModal";
+
 import GlobalDocsPanel from "@/components/panels/GlobalDocsPanel";
 import { useAuth } from "@clerk/clerk-react";
 
 export default function Dashboard() {
   const [view, setView] = useState("table");
-  const [selectedUni, setSelectedUni] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
-  const [detailOpen, setDetailOpen] = useState(false);
   const [showGlobalDocs, setShowGlobalDocs] = useState(false);
   const [editingUni, setEditingUni] = useState(null);
   const [prefillUni, setPrefillUni] = useState(null);
@@ -174,8 +172,9 @@ export default function Dashboard() {
 
   // Handlers
   const handleRowClick = (uni) => {
-    setSelectedUni(uni);
-    setDetailOpen(true);
+    setEditingUni(uni);
+    setPrefillUni(null);
+    setFormOpen(true);
   };
 
   const handleDateSelect = (date) => {
@@ -194,17 +193,6 @@ export default function Dashboard() {
     } else {
       createUni.mutate(data);
     }
-  };
-
-  const handleEditFromDetail = () => {
-    setDetailOpen(false);
-    setEditingUni(selectedUni);
-    setFormOpen(true);
-  };
-
-  const handleDeleteUni = () => {
-    if (!selectedUni) return;
-    deleteUni.mutate(selectedUni.id);
   };
 
   const handleAddProgram = (uni) => {
@@ -227,10 +215,7 @@ export default function Dashboard() {
 
 
 
-  // Keep selectedUni in sync with latest data
-  const currentSelectedUni = selectedUni
-    ? universities.find((u) => u.id === selectedUni.id) || selectedUni
-    : null;
+
 
   const [statusFilter, setStatusFilter] = useState(null);
 
@@ -352,13 +337,7 @@ export default function Dashboard() {
         initialDate={initialDate}
       />
 
-      <UniversityDetailModal
-        open={detailOpen}
-        onOpenChange={setDetailOpen}
-        university={currentSelectedUni}
-        onEdit={handleEditFromDetail}
-        onDelete={handleDeleteUni}
-      />
+
     </div>
   );
 }
