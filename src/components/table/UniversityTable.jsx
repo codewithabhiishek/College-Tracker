@@ -49,8 +49,8 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
       let av = a[sortKey];
       let bv = b[sortKey];
       if (sortKey === "deadline") {
-        av = av || "9999-12-31";
-        bv = bv || "9999-12-31";
+        av = av || "9999-12-32";
+        bv = bv || "9999-12-32";
       }
       if (av < bv) return sortDir === "asc" ? -1 : 1;
       if (av > bv) return sortDir === "asc" ? 1 : -1;
@@ -64,8 +64,8 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
     let av = a.representative[sortKey];
     let bv = b.representative[sortKey];
     if (sortKey === "deadline") {
-      av = av || "9999-12-31";
-      bv = bv || "9999-12-31";
+      av = av || "9999-12-32";
+      bv = bv || "9999-12-32";
     }
     if (av < bv) return sortDir === "asc" ? -1 : 1;
     if (av > bv) return sortDir === "asc" ? 1 : -1;
