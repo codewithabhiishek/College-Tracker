@@ -298,7 +298,6 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                     </div>
                   </td>
                   <td className={`px-4 py-3 text-xs ${getDeadlineColor(rep.deadline)}`}>
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground/40 mr-1.5 font-mono">Next:</span>
                     {formatDeadline(rep.deadline)}
                   </td>
                   <td className="px-4 py-3">
