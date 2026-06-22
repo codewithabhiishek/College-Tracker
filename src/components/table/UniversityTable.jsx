@@ -27,15 +27,24 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
     }));
   };
 
+  const getDaysColor = (days, isMuted = false) => {
+    if (days === null || days === undefined) return "text-muted-foreground/40";
+    let colorClass = "";
+    if (days < 0) colorClass = "text-red-500";
+    else if (days <= 14) colorClass = "text-red-400";
+    else if (days <= 30) colorClass = "text-amber-400";
+    else if (days <= 60) colorClass = "text-yellow-400";
+    else if (days <= 90) colorClass = "text-emerald-400";
+    else colorClass = "text-cyan-400";
+
+    return isMuted ? `${colorClass}/70` : colorClass;
+  };
+
   const getDeadlineColor = (deadline) => {
     if (!deadline) return "text-muted-foreground/40";
     if (deadline.startsWith("9999-12-31")) return "text-purple-400 font-semibold";
     const days = daysRemaining(deadline);
-    if (days === null) return "text-muted-foreground/40";
-    if (days < 0) return "text-red-500/90";
-    if (days <= 14) return "text-red-400 font-medium";
-    if (days <= 30) return "text-amber-400 font-medium";
-    return "text-emerald-400/90";
+    return getDaysColor(days);
   };
 
   // Group universities by name (trimmed, case-insensitive)
@@ -181,15 +190,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                   <td className="px-4 py-3">
                     {days !== null ? (
                       <span
-                        className={`text-xs font-semibold tabular-nums ${
-                          days < 0
-                            ? "text-red-500"
-                            : days <= 14
-                              ? "text-red-400"
-                              : days <= 30
-                                ? "text-amber-400"
-                                : "text-emerald-400"
-                        }`}
+                        className={`text-xs font-semibold tabular-nums ${getDaysColor(days)}`}
                       >
                         {days < 0
                           ? `${Math.abs(days)}d ago`
@@ -303,15 +304,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                   <td className="px-4 py-3">
                     {repDays !== null ? (
                       <span
-                        className={`text-xs font-semibold tabular-nums ${
-                          repDays < 0
-                            ? "text-red-500"
-                            : repDays <= 14
-                              ? "text-red-400"
-                              : repDays <= 30
-                                ? "text-amber-400"
-                                : "text-emerald-400"
-                        }`}
+                        className={`text-xs font-semibold tabular-nums ${getDaysColor(repDays)}`}
                       >
                         {repDays < 0
                           ? `${Math.abs(repDays)}d ago`
@@ -378,15 +371,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                         <td className="px-4 py-2">
                           {days !== null ? (
                             <span
-                              className={`text-[11px] font-medium font-mono tabular-nums ${
-                                days < 0
-                                  ? "text-red-500/70"
-                                  : days <= 14
-                                    ? "text-red-400/70"
-                                    : days <= 30
-                                      ? "text-amber-400/70"
-                                      : "text-emerald-400/70"
-                              }`}
+                              className={`text-[11px] font-medium font-mono tabular-nums ${getDaysColor(days, true)}`}
                             >
                               {days < 0
                                 ? `${Math.abs(days)}d ago`
