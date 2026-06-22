@@ -134,6 +134,14 @@ export default function UniversityDetailModal({
         {/* Actions */}
         <div className="px-6 py-3 border-t border-border flex justify-between">
           <Button
+            size="sm"
+            onClick={onEdit}
+            className="text-xs uppercase tracking-wider"
+          >
+            <Pencil className="w-3.5 h-3.5 mr-1" />
+            Edit
+          </Button>
+          <Button
             variant="outline"
             size="sm"
             onClick={onDelete}
@@ -141,14 +149,6 @@ export default function UniversityDetailModal({
           >
             <Trash2 className="w-3.5 h-3.5 mr-1" />
             Delete
-          </Button>
-          <Button
-            size="sm"
-            onClick={onEdit}
-            className="text-xs uppercase tracking-wider"
-          >
-            <Pencil className="w-3.5 h-3.5 mr-1" />
-            Edit
           </Button>
         </div>
       </DialogContent>
