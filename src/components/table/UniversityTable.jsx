@@ -281,7 +281,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                       <span className="font-display text-base font-bold tracking-wide text-foreground group-hover:text-primary transition-colors line-clamp-1">
                         {group.name}
                       </span>
-                      <span className="text-[10px] uppercase tracking-widest text-muted-foreground bg-secondary border border-border px-2 py-0.5 rounded font-semibold font-mono">
+                      <span className="text-[10px] uppercase tracking-widest text-muted-foreground bg-secondary border border-border px-2 py-0.5 rounded font-semibold font-mono select-none">
                         {group.items.length} Programs
                       </span>
                     </div>
@@ -350,7 +350,9 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
 
                 {/* Child Rows */}
                 {expanded &&
-                  group.items.map((uni) => {
+                  group.items.map((uni, index) => {
+                    const isLast = index === group.items.length - 1;
+                    const connector = isLast ? "└─" : "├─";
                     const days = daysRemaining(uni.deadline);
                     const cfg = statusConfig[uni.status] || statusConfig.researching;
 
@@ -358,35 +360,35 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                       <tr
                         key={uni.id}
                         onClick={() => onRowClick(uni)}
-                        className="h-[60px] border-b border-border/30 hover:bg-secondary/20 bg-secondary/5 cursor-pointer transition-colors group"
+                        className="h-[52px] border-b border-border/10 bg-[#060606] hover:bg-[#0c0c0c] cursor-pointer transition-colors group"
                       >
-                        <td className="pl-11 pr-4 py-3">
+                        <td className="pl-12 pr-4 py-2 border-l-2 border-primary/20">
                           <div className="flex items-center gap-2">
-                            <span className="text-muted-foreground/30 font-mono text-sm select-none">└</span>
-                            <span className="font-medium text-foreground/90 group-hover:text-primary transition-colors text-sm line-clamp-1">
+                            <span className="text-muted-foreground/30 font-mono text-[13px] select-none">{connector}</span>
+                            <span className="font-mono text-[11px] font-medium uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors line-clamp-1">
                               {uni.program || "General Application"}
                             </span>
                           </div>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-2 border-l-2 border-transparent">
                           {/* Empty spacer to align with parent columns */}
                         </td>
-                        <td className="px-4 py-3 text-xs text-muted-foreground/75">
+                        <td className="px-4 py-2 text-[11px] font-mono text-muted-foreground/60">
                           {uni.deadline
                             ? format(parseISO(uni.deadline), "dd MMM yyyy")
                             : "—"}
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-2">
                           {days !== null ? (
                             <span
-                              className={`text-xs font-medium tabular-nums ${
+                              className={`text-[11px] font-medium font-mono tabular-nums ${
                                 days < 0
-                                  ? "text-red-500/80"
+                                  ? "text-red-500/70"
                                   : days <= 14
-                                    ? "text-red-400/80"
+                                    ? "text-red-400/70"
                                     : days <= 30
-                                      ? "text-amber-400/80"
-                                      : "text-emerald-400/80"
+                                      ? "text-amber-400/70"
+                                      : "text-emerald-400/70"
                               }`}
                             >
                               {days < 0
@@ -396,19 +398,19 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                                   : `${days}d`}
                             </span>
                           ) : (
-                            <span className="text-muted-foreground/30">—</span>
+                            <span className="text-muted-foreground/30 font-mono text-[11px]">—</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-center">
+                        <td className="px-4 py-2 text-center">
                           <span
-                            className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider border rounded-md ${cfg.badge}`}
-                            style={{ minWidth: "90px" }}
+                            className={`inline-flex items-center justify-center gap-1 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider border rounded-md opacity-85 ${cfg.badge}`}
+                            style={{ minWidth: "80px" }}
                           >
-                            <span className={`w-1.5 h-1.5 ${cfg.dot}`} />
+                            <span className={`w-1 h-1 ${cfg.dot}`} />
                             {cfg.short}
                           </span>
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-4 py-2">
                           <div className="flex justify-center">
                             {uni.portal_url ? (
                               <a
@@ -418,7 +420,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                                 onClick={(e) => e.stopPropagation()}
                                 className="text-muted-foreground hover:text-primary transition-colors"
                               >
-                                <ExternalLink className="w-4 h-4" />
+                                <ExternalLink className="w-3.5 h-3.5" />
                               </a>
                             ) : (
                               <span
@@ -426,28 +428,28 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                                   e.stopPropagation();
                                   onRowClick(uni);
                                 }}
-                                className="text-muted-foreground/30 text-[11px] uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1 cursor-pointer"
+                                className="text-muted-foreground/25 text-[10px] uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1 cursor-pointer"
                               >
                                 <span className="text-lg leading-none mb-0.5">+</span> Add Portal
                               </span>
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                          <div className="flex justify-center gap-1.5">
+                        <td className="px-4 py-2" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex justify-center gap-1">
                             <button
                               onClick={() => onEdit && onEdit(uni)}
                               title="Edit Application"
-                              className="p-1.5 text-muted-foreground hover:text-primary hover:border-border transition-colors border border-transparent rounded cursor-pointer"
+                              className="p-1 text-muted-foreground hover:text-primary hover:border-border transition-colors border border-transparent rounded cursor-pointer"
                             >
-                              <Pencil className="w-3.5 h-3.5" />
+                              <Pencil className="w-3 h-3" />
                             </button>
                             <button
                               onClick={() => onDelete && onDelete(uni)}
                               title="Delete Application"
-                              className="p-1.5 text-muted-foreground hover:text-destructive hover:border-border transition-colors border border-transparent rounded cursor-pointer"
+                              className="p-1 text-muted-foreground hover:text-destructive hover:border-border transition-colors border border-transparent rounded cursor-pointer"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-3 h-3" />
                             </button>
                           </div>
                         </td>
@@ -472,5 +474,6 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
     </div>
   );
 }
+
 
 
