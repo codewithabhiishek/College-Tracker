@@ -61,7 +61,7 @@ export default function UniversityFormModal({
         ...emptyForm,
         name: prefillUni.name || "",
         country: prefillUni.country || "",
-        deadline: initialDate || "",
+        deadline: prefillUni.deadline ? prefillUni.deadline.split('T')[0] : (initialDate || ""),
       });
     } else {
       setForm({ ...emptyForm, deadline: initialDate || "" });

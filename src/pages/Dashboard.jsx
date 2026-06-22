@@ -210,7 +210,7 @@ export default function Dashboard() {
   const handleAddProgram = (uni) => {
     setEditingUni(null);
     setInitialDate(null);
-    setPrefillUni({ name: uni.name, country: uni.country });
+    setPrefillUni({ name: uni.name, country: uni.country, deadline: uni.deadline });
     setFormOpen(true);
   };
 
