@@ -67,13 +67,32 @@ export default function Dashboard() {
       if (!res.ok) throw new Error("Failed to create");
       return res.json();
     },
-    onSuccess: () => {
-      refetchUnis();
+    onMutate: async (newUni) => {
+      await queryClient.cancelQueries({ queryKey: ["universities"] });
+      const previousUnis = queryClient.getQueryData(["universities"]);
+      const tempId = `temp-${Math.random()}`;
+      queryClient.setQueryData(["universities"], (old = []) => [
+        ...old,
+        { id: tempId, ...newUni, created_at: new Date().toISOString() },
+      ]);
       setFormOpen(false);
       setEditingUni(null);
       setPrefillUni(null);
       setInitialDate(null);
+      return { previousUnis };
+    },
+    onError: (err, newUni, context) => {
+      if (context?.previousUnis) {
+        queryClient.setQueryData(["universities"], context.previousUnis);
+      }
+      toast.error("Failed to add university");
+      setFormOpen(true);
+    },
+    onSuccess: () => {
       toast.success("University added");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["universities"] });
     },
   });
 
@@ -91,14 +110,30 @@ export default function Dashboard() {
       if (!res.ok) throw new Error("Failed to update");
       return res.json();
     },
-    onSuccess: () => {
-      refetchUnis();
+    onMutate: async (updatedUni) => {
+      await queryClient.cancelQueries({ queryKey: ["universities"] });
+      const previousUnis = queryClient.getQueryData(["universities"]);
+      queryClient.setQueryData(["universities"], (old = []) =>
+        old.map((uni) => (uni.id === updatedUni.id ? { ...uni, ...updatedUni } : uni))
+      );
       setFormOpen(false);
       setEditingUni(null);
       setPrefillUni(null);
       setInitialDate(null);
-      setSelectedUni(null);
+      return { previousUnis };
+    },
+    onError: (err, updatedUni, context) => {
+      if (context?.previousUnis) {
+        queryClient.setQueryData(["universities"], context.previousUnis);
+      }
+      toast.error("Failed to update university");
+      setFormOpen(true);
+    },
+    onSuccess: () => {
       toast.success("University updated");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["universities"] });
     },
   });
 
@@ -116,11 +151,25 @@ export default function Dashboard() {
       if (!res.ok) throw new Error("Failed to delete");
       return res.json();
     },
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: ["universities"] });
+      const previousUnis = queryClient.getQueryData(["universities"]);
+      queryClient.setQueryData(["universities"], (old = []) =>
+        old.filter((uni) => uni.id !== id)
+      );
+      return { previousUnis };
+    },
+    onError: (err, id, context) => {
+      if (context?.previousUnis) {
+        queryClient.setQueryData(["universities"], context.previousUnis);
+      }
+      toast.error("Failed to delete university");
+    },
     onSuccess: () => {
-      refetchUnis();
-      setSelectedUni(null);
-      setDetailOpen(false);
       toast.success("University deleted");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["universities"] });
     },
   });
 
