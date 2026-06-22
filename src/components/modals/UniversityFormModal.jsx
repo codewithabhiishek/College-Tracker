@@ -41,33 +41,39 @@ export default function UniversityFormModal({
   initialDate,
 }) {
   const [form, setForm] = useState(emptyForm);
+  const [deadlineType, setDeadlineType] = useState("empty");
   const isEdit = !!university;
 
   useEffect(() => {
     if (!open) return;
 
+    let initialDeadline = "";
     if (university) {
-      setForm({
-        name: university.name || "",
-        country: university.country || "",
-        program: university.program || "",
-        deadline: university.deadline ? university.deadline.split('T')[0] : "",
-        status: university.status || "researching",
-        portal_url: university.portal_url || "",
-        application_fee: university.application_fee ?? "",
-        fee_paid: university.fee_paid || false,
-        notes: university.notes || "",
-      });
+      initialDeadline = university.deadline ? university.deadline.split('T')[0] : "";
     } else if (prefillUni) {
-      setForm({
-        ...emptyForm,
-        name: prefillUni.name || "",
-        country: prefillUni.country || "",
-        deadline: prefillUni.deadline ? prefillUni.deadline.split('T')[0] : (initialDate || ""),
-      });
+      initialDeadline = prefillUni.deadline ? prefillUni.deadline.split('T')[0] : (initialDate || "");
     } else {
-      setForm({ ...emptyForm, deadline: initialDate || "" });
+      initialDeadline = initialDate || "";
     }
+
+    const type = initialDeadline === "9999-12-31"
+      ? "not-out"
+      : initialDeadline
+      ? "custom"
+      : "empty";
+    setDeadlineType(type);
+
+    setForm({
+      name: university?.name || prefillUni?.name || "",
+      country: university?.country || prefillUni?.country || "",
+      program: university?.program || "",
+      deadline: initialDeadline,
+      status: university?.status || "researching",
+      portal_url: university?.portal_url || "",
+      application_fee: university?.application_fee ?? "",
+      fee_paid: university?.fee_paid || false,
+      notes: university?.notes || "",
+    });
   }, [open, university?.id, prefillUni?.name, initialDate]);
 
   const handleSubmit = (e) => {
@@ -150,20 +156,17 @@ export default function UniversityFormModal({
               </Label>
               <div className="flex flex-col gap-2 mt-1">
                 <Select
-                  value={
-                    form.deadline === "9999-12-31"
-                      ? "not-out"
-                      : form.deadline
-                      ? "custom"
-                      : "empty"
-                  }
+                  value={deadlineType}
                   onValueChange={(val) => {
+                    setDeadlineType(val);
                     if (val === "not-out") {
                       update("deadline", "9999-12-31");
                     } else if (val === "empty") {
                       update("deadline", "");
                     } else {
-                      update("deadline", new Date().toISOString().split("T")[0]);
+                      const current = form.deadline;
+                      const isValidDate = current && current !== "9999-12-31";
+                      update("deadline", isValidDate ? current : new Date().toISOString().split("T")[0]);
                     }
                   }}
                 >
@@ -177,7 +180,7 @@ export default function UniversityFormModal({
                   </SelectContent>
                 </Select>
 
-                {form.deadline !== "9999-12-31" && form.deadline !== "" && (
+                {deadlineType === "custom" && (
                   <Input
                     type="date"
                     value={form.deadline}
