@@ -433,32 +433,34 @@ export default function Dashboard() {
         </div>
 
         {/* Global docs panel */}
-        {showGlobalDocs && (
-          <GlobalDocsPanel
-            docs={globalDocs}
-            onToggle={(doc) =>
-              updateGlobalDoc.mutate({
-                id: doc.id,
-                data: { is_ready: !doc.is_ready },
-              })
-            }
-            onAdd={(name) =>
-              createGlobalDoc.mutate({
-                university_id: "global",
-                doc_name: name,
-                is_ready: false,
-              })
-            }
-            onUpdate={(id, name) =>
-              updateGlobalDoc.mutate({
-                id,
-                data: { doc_name: name },
-              })
-            }
-            onDelete={(id) => deleteGlobalDoc.mutate(id)}
-            onClose={() => setShowGlobalDocs(false)}
-          />
-        )}
+        <AnimatePresence>
+          {showGlobalDocs && (
+            <GlobalDocsPanel
+              docs={globalDocs}
+              onToggle={(doc) =>
+                updateGlobalDoc.mutate({
+                  id: doc.id,
+                  data: { is_ready: !doc.is_ready },
+                })
+              }
+              onAdd={(name) =>
+                createGlobalDoc.mutate({
+                  university_id: "global",
+                  doc_name: name,
+                  is_ready: false,
+                })
+              }
+              onUpdate={(id, name) =>
+                updateGlobalDoc.mutate({
+                  id,
+                  data: { doc_name: name },
+                })
+              }
+              onDelete={(id) => deleteGlobalDoc.mutate(id)}
+              onClose={() => setShowGlobalDocs(false)}
+            />
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Modals */}
