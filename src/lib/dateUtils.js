@@ -8,7 +8,7 @@ import { differenceInCalendarDays, parseISO, format } from "date-fns";
  */
 export function daysRemaining(deadlineStr) {
   if (!deadlineStr) return null;
-  if (deadlineStr.startsWith("9999-12-30") || deadlineStr.startsWith("9999-12-31")) return null;
+  if (deadlineStr.startsWith("9999-12-31")) return null;
   const deadline = parseISO(deadlineStr);
   const today = new Date();
   return differenceInCalendarDays(deadline, today);
@@ -20,7 +20,6 @@ export function daysRemaining(deadlineStr) {
  */
 export function formatDeadline(deadlineStr) {
   if (!deadlineStr) return "—";
-  if (deadlineStr.startsWith("9999-12-30")) return "Not Decided";
   if (deadlineStr.startsWith("9999-12-31")) return "Not Out Yet";
   return format(parseISO(deadlineStr), "dd MMM yyyy");
 }

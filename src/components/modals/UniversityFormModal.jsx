@@ -149,18 +149,14 @@ export default function UniversityFormModal({
               <div className="flex flex-col gap-2 mt-1">
                 <Select
                   value={
-                    form.deadline === "9999-12-30"
-                      ? "not-decided"
-                      : form.deadline === "9999-12-31"
+                    form.deadline === "9999-12-31"
                       ? "not-out"
                       : form.deadline
                       ? "custom"
                       : "empty"
                   }
                   onValueChange={(val) => {
-                    if (val === "not-decided") {
-                      update("deadline", "9999-12-30");
-                    } else if (val === "not-out") {
+                    if (val === "not-out") {
                       update("deadline", "9999-12-31");
                     } else if (val === "empty") {
                       update("deadline", "");
@@ -174,13 +170,12 @@ export default function UniversityFormModal({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="empty">Not Specified</SelectItem>
-                    <SelectItem value="not-decided">Not Decided</SelectItem>
                     <SelectItem value="not-out">Not Out Yet</SelectItem>
                     <SelectItem value="custom">Specific Date</SelectItem>
                   </SelectContent>
                 </Select>
 
-                {form.deadline !== "9999-12-30" && form.deadline !== "9999-12-31" && form.deadline !== "" && (
+                {form.deadline !== "9999-12-31" && form.deadline !== "" && (
                   <Input
                     type="date"
                     value={form.deadline}
