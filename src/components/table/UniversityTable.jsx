@@ -27,6 +27,17 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
     }));
   };
 
+  const getDeadlineColor = (deadline) => {
+    if (!deadline) return "text-muted-foreground/40";
+    if (deadline.startsWith("9999-12-31")) return "text-purple-400 font-semibold";
+    const days = daysRemaining(deadline);
+    if (days === null) return "text-muted-foreground/40";
+    if (days < 0) return "text-red-500/90";
+    if (days <= 14) return "text-red-400 font-medium";
+    if (days <= 30) return "text-amber-400 font-medium";
+    return "text-emerald-400/90";
+  };
+
   // Group universities by name (trimmed, case-insensitive)
   const groupsMap = {};
   universities.forEach((uni) => {
@@ -164,7 +175,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                       <span className="line-clamp-1">{countryName}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground/80">
+                  <td className={`px-4 py-3 text-xs ${getDeadlineColor(uni.deadline)}`}>
                     {formatDeadline(uni.deadline)}
                   </td>
                   <td className="px-4 py-3">
@@ -292,7 +303,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                       <span className="line-clamp-1">{countryName}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground/80">
+                  <td className={`px-4 py-3 text-xs ${getDeadlineColor(rep.deadline)}`}>
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground/40 mr-1.5 font-mono">Next:</span>
                     {formatDeadline(rep.deadline)}
                   </td>
@@ -368,7 +379,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                         <td className="px-4 py-2 border-l-2 border-transparent">
                           {/* Empty spacer to align with parent columns */}
                         </td>
-                        <td className="px-4 py-2 text-[11px] font-mono text-muted-foreground/60">
+                        <td className={`px-4 py-2 text-[11px] font-mono ${getDeadlineColor(uni.deadline)}`}>
                           {formatDeadline(uni.deadline)}
                         </td>
                         <td className="px-4 py-2">
