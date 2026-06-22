@@ -34,14 +34,14 @@ export default function SummaryStats({ universities, globalDocs, statusFilter, s
           <div
             key={status}
             onClick={() => setStatusFilter(isActive ? null : status)}
-            className={`flex items-center gap-1.5 px-2 py-1 border transition-colors cursor-pointer select-none ${
+            className={`flex items-center gap-1.5 px-2 py-1 border transition-all duration-300 cursor-pointer select-none ${
               isActive 
-                ? "border-primary bg-primary/10" 
-                : "border-border hover:bg-secondary/50"
+                ? "border-primary bg-primary/10 shadow-[0_0_12px_rgba(163,230,53,0.25)] scale-105" 
+                : "border-border hover:border-primary/50 hover:bg-secondary/50 hover:shadow-[0_0_10px_rgba(163,230,53,0.15)] hover:-translate-y-0.5"
             }`}
           >
-            <div className={`w-1.5 h-1.5 ${cfg.dot}`} />
-            <span className={`uppercase tracking-wider ${isActive ? "text-primary" : "text-muted-foreground"}`}>
+            <div className={`w-1.5 h-1.5 ${cfg.dot} ${isActive ? "animate-pulse" : ""}`} />
+            <span className={`uppercase tracking-wider transition-colors ${isActive ? "text-primary drop-shadow-[0_0_8px_rgba(163,230,53,0.5)]" : "text-muted-foreground"}`}>
               {cfg.short}
             </span>
             <span className="text-foreground font-semibold">{count}</span>

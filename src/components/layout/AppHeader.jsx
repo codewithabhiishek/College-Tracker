@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { LayoutGrid, Table2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserButton, useUser } from "@clerk/clerk-react";
@@ -11,6 +12,35 @@ export default function AppHeader({
   const { user } = useUser();
   const rawName = user?.firstName || "Abhishek";
   const firstName = rawName.toUpperCase();
+
+  const [glitchText, setGlitchText] = useState("COLLEGETRACK");
+
+  useEffect(() => {
+    const chars = "!<>-_\\\\/[]{}—=+*^?#_";
+    const target = "COLLEGETRACK";
+    let iteration = 0;
+    
+    const interval = setInterval(() => {
+      setGlitchText((prev) =>
+        prev
+          .split("")
+          .map((char, index) => {
+            if (index < iteration) {
+              return target[index];
+            }
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join("")
+      );
+
+      if (iteration >= target.length) {
+        clearInterval(interval);
+      }
+      iteration += 1 / 2;
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const getGreeting = () => {
     const hr = new Date().toLocaleTimeString('en-US', {
@@ -31,7 +61,7 @@ export default function AppHeader({
       <div className="flex items-center gap-3">
         <div className="w-2 h-2 bg-primary" />
         <h1 className="font-display text-lg font-bold tracking-tight uppercase">
-          CollegeTrack<span className="text-primary">_</span>
+          {glitchText}<span className="text-primary animate-pulse">_</span>
         </h1>
         <div className="flex flex-col ml-2 hidden sm:flex">
           <span className="text-muted-foreground text-[10px] tracking-widest uppercase">

@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 import AppHeader from "@/components/layout/AppHeader";
 import SummaryStats from "@/components/stats/SummaryStats";
@@ -378,29 +378,56 @@ export default function Dashboard() {
               </div>
             </div>
           ) : (
-            <>
+            <AnimatePresence mode="wait">
               {view === "table" && (
-                <UniversityTable
-                  universities={filteredUnis}
-                  onRowClick={handleRowClick}
-                  onAddProgram={handleAddProgram}
-                  onDelete={handleDeleteUniDirect}
-                />
+                <motion.div
+                  key="table"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-full h-full"
+                >
+                  <UniversityTable
+                    universities={filteredUnis}
+                    onRowClick={handleRowClick}
+                    onAddProgram={handleAddProgram}
+                    onDelete={handleDeleteUniDirect}
+                  />
+                </motion.div>
               )}
               {view === "kanban" && (
-                <KanbanBoard
-                  universities={filteredUnis}
-                  onCardClick={handleRowClick}
-                />
+                <motion.div
+                  key="kanban"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-full h-full"
+                >
+                  <KanbanBoard
+                    universities={filteredUnis}
+                    onCardClick={handleRowClick}
+                  />
+                </motion.div>
               )}
               {view === "calendar" && (
-                <CalendarView
-                  universities={filteredUnis}
-                  onEventClick={handleRowClick}
-                  onDateSelect={handleDateSelect}
-                />
+                <motion.div
+                  key="calendar"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-full h-full"
+                >
+                  <CalendarView
+                    universities={filteredUnis}
+                    onEventClick={handleRowClick}
+                    onDateSelect={handleDateSelect}
+                  />
+                </motion.div>
               )}
-            </>
+            </AnimatePresence>
           )}
         </main>
         </div>

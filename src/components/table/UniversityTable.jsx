@@ -170,7 +170,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                           onAddProgram && onAddProgram(uni);
                         }}
                         title="Add another program for this university"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                        className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-primary transition-all duration-300 cursor-pointer hover:scale-125 hover:rotate-90 active:scale-95"
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
@@ -220,7 +220,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="text-muted-foreground hover:text-primary transition-colors"
+                          className="text-muted-foreground hover:text-primary transition-all duration-300 hover:scale-125 hover:-rotate-6 inline-block"
                         >
                           <ExternalLink className="w-4 h-4" />
                         </a>
@@ -230,7 +230,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                             e.stopPropagation();
                             onRowClick(uni);
                           }}
-                          className="text-muted-foreground/30 text-[11px] uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1 cursor-pointer"
+                          className="text-muted-foreground/30 text-[11px] uppercase tracking-wider hover:text-primary transition-all duration-300 flex items-center gap-1 cursor-pointer hover:scale-105 active:scale-95"
                         >
                           <span className="text-lg leading-none mb-0.5">+</span> Add Portal
                         </span>
@@ -242,7 +242,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                       <button
                         onClick={() => onDelete && onDelete(uni)}
                         title="Delete Application"
-                        className="p-1.5 text-muted-foreground hover:text-destructive hover:border-border transition-colors border border-transparent rounded cursor-pointer"
+                        className="p-1.5 text-muted-foreground hover:text-destructive hover:border-destructive/30 transition-all duration-300 border border-transparent rounded cursor-pointer hover:scale-110 hover:shadow-[0_0_10px_rgba(239,68,68,0.2)] active:scale-95"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -448,7 +448,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="text-muted-foreground hover:text-primary transition-colors"
+                                    className="text-muted-foreground hover:text-primary transition-all duration-300 hover:scale-125 hover:-rotate-6 inline-block"
                                   >
                                     <ExternalLink className="w-3.5 h-3.5" />
                                   </a>
@@ -458,7 +458,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                                       e.stopPropagation();
                                       onRowClick(uni);
                                     }}
-                                    className="text-muted-foreground/25 text-[10px] uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1 cursor-pointer"
+                                    className="text-muted-foreground/25 text-[10px] uppercase tracking-wider hover:text-primary transition-all duration-300 flex items-center gap-1 cursor-pointer hover:scale-105 active:scale-95"
                                   >
                                     <span className="text-lg leading-none mb-0.5">+</span> Add Portal
                                   </span>
@@ -478,7 +478,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                                 <button
                                   onClick={() => onDelete && onDelete(uni)}
                                   title="Delete Application"
-                                  className="p-1 text-muted-foreground hover:text-destructive hover:border-border transition-colors border border-transparent rounded cursor-pointer"
+                                  className="p-1 text-muted-foreground hover:text-destructive hover:border-destructive/30 transition-all duration-300 border border-transparent rounded cursor-pointer hover:scale-110 hover:shadow-[0_0_10px_rgba(239,68,68,0.2)] active:scale-95"
                                 >
                                   <Trash2 className="w-3 h-3" />
                                 </button>
