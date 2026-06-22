@@ -35,6 +35,7 @@ export default function UniversityFormModal({
   open,
   onOpenChange,
   university,
+  prefillUni,
   onSave,
   isSaving,
   initialDate,
@@ -55,10 +56,17 @@ export default function UniversityFormModal({
         fee_paid: university.fee_paid || false,
         notes: university.notes || "",
       });
+    } else if (prefillUni) {
+      setForm({
+        ...emptyForm,
+        name: prefillUni.name || "",
+        country: prefillUni.country || "",
+        deadline: initialDate || "",
+      });
     } else {
       setForm({ ...emptyForm, deadline: initialDate || "" });
     }
-  }, [university, open, initialDate]);
+  }, [university, open, initialDate, prefillUni]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

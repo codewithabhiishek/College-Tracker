@@ -22,6 +22,7 @@ export default function Dashboard() {
   const [detailOpen, setDetailOpen] = useState(false);
   const [showGlobalDocs, setShowGlobalDocs] = useState(false);
   const [editingUni, setEditingUni] = useState(null);
+  const [prefillUni, setPrefillUni] = useState(null);
   const [initialDate, setInitialDate] = useState(null);
 
   const { getToken } = useAuth();
@@ -72,6 +73,7 @@ export default function Dashboard() {
       refetchUnis();
       setFormOpen(false);
       setEditingUni(null);
+      setPrefillUni(null);
       setInitialDate(null);
       toast.success("University added");
     },
@@ -95,6 +97,7 @@ export default function Dashboard() {
       refetchUnis();
       setFormOpen(false);
       setEditingUni(null);
+      setPrefillUni(null);
       setInitialDate(null);
       setSelectedUni(null);
       toast.success("University updated");
@@ -125,7 +128,7 @@ export default function Dashboard() {
 
   // GlobalDoc mutations
   const createGlobalDoc = useMutation({
-    mutationFn: async (data) => {
+    mutationFn: async (/** @type {any} */ data) => {
       const token = await getToken();
       const res = await fetch("/api/documents", {
         method: "POST",
@@ -140,7 +143,7 @@ export default function Dashboard() {
   });
 
   const updateGlobalDoc = useMutation({
-    mutationFn: async ({ id, data }) => {
+    mutationFn: async (/** @type {{id: string, data: any}} */ { id, data }) => {
       const token = await getToken();
       const res = await fetch("/api/documents", {
         method: "PUT",
@@ -203,6 +206,15 @@ export default function Dashboard() {
     if (!selectedUni) return;
     deleteUni.mutate(selectedUni.id);
   };
+
+  const handleAddProgram = (uni) => {
+    setEditingUni(null);
+    setInitialDate(null);
+    setPrefillUni({ name: uni.name, country: uni.country });
+    setFormOpen(true);
+  };
+
+
 
   // Keep selectedUni in sync with latest data
   const currentSelectedUni = selectedUni
@@ -267,6 +279,7 @@ export default function Dashboard() {
                 <UniversityTable
                   universities={filteredUnis}
                   onRowClick={handleRowClick}
+                  onAddProgram={handleAddProgram}
                 />
               )}
               {view === "kanban" && (
@@ -313,8 +326,14 @@ export default function Dashboard() {
       {/* Modals */}
       <UniversityFormModal
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) {
+            setPrefillUni(null);
+          }
+        }}
         university={editingUni}
+        prefillUni={prefillUni}
         onSave={handleSaveUni}
         isSaving={createUni.isPending || updateUni.isPending}
         initialDate={initialDate}

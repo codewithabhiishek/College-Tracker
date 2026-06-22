@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { format, parseISO } from "date-fns";
-import { ArrowUpDown, ExternalLink } from "lucide-react";
+import { ArrowUpDown, ExternalLink, ChevronDown, ChevronRight, Plus } from "lucide-react";
 import { statusConfig } from "@/lib/statusConfig";
 import { daysRemaining } from "@/lib/dateUtils";
 
-export default function UniversityTable({ universities, onRowClick }) {
+export default function UniversityTable({ universities, onRowClick, onAddProgram }) {
   const [sortKey, setSortKey] = useState("deadline");
   const [sortDir, setSortDir] = useState("asc");
+  const [expandedGroups, setExpandedGroups] = useState({});
 
   const handleSort = (key) => {
     if (sortKey === key) {
@@ -17,9 +18,52 @@ export default function UniversityTable({ universities, onRowClick }) {
     }
   };
 
-  const sorted = [...universities].sort((a, b) => {
-    let av = a[sortKey];
-    let bv = b[sortKey];
+  const isExpanded = (groupName) => expandedGroups[groupName] !== false;
+
+  const toggleGroup = (groupName, e) => {
+    e.stopPropagation();
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [groupName]: prev[groupName] === false ? true : false,
+    }));
+  };
+
+  // Group universities by name (trimmed, case-insensitive)
+  const groupsMap = {};
+  universities.forEach((uni) => {
+    const key = (uni.name || "").trim().toLowerCase();
+    if (!groupsMap[key]) {
+      groupsMap[key] = {
+        name: (uni.name || "").trim() || "Unnamed University",
+        country: uni.country || "",
+        items: [],
+      };
+    }
+    groupsMap[key].items.push(uni);
+  });
+
+  const groups = Object.values(groupsMap);
+
+  // Sort items within each group
+  groups.forEach((group) => {
+    group.items.sort((a, b) => {
+      let av = a[sortKey];
+      let bv = b[sortKey];
+      if (sortKey === "deadline") {
+        av = av || "9999-12-31";
+        bv = bv || "9999-12-31";
+      }
+      if (av < bv) return sortDir === "asc" ? -1 : 1;
+      if (av > bv) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+    group.representative = group.items[0];
+  });
+
+  // Sort the groups themselves based on their representative item
+  groups.sort((a, b) => {
+    let av = a.representative[sortKey];
+    let bv = b.representative[sortKey];
     if (sortKey === "deadline") {
       av = av || "9999-12-31";
       bv = bv || "9999-12-31";
@@ -73,95 +117,305 @@ export default function UniversityTable({ universities, onRowClick }) {
           </tr>
         </thead>
         <tbody>
-          {sorted.map((uni) => {
-            const days = daysRemaining(uni.deadline);
-            const cfg = statusConfig[uni.status] || statusConfig.researching;
+          {groups.map((group) => {
+            const hasMultiple = group.items.length > 1;
 
-            // Extract flag from country if present
-            const parts = uni.country ? uni.country.split(' ') : [];
+            if (!hasMultiple) {
+              // Render standard flat row for single-program universities
+              const uni = group.items[0];
+              const days = daysRemaining(uni.deadline);
+              const cfg = statusConfig[uni.status] || statusConfig.researching;
+
+              const parts = uni.country ? uni.country.split(' ') : [];
+              const flag = parts.length > 1 && /[\uD83C][\uDDE6-\uDDFF][\uD83C][\uDDE6-\uDDFF]|[\uD83C][\uDF00-\uDFFF]/.test(parts[parts.length - 1]) ? parts.pop() : '';
+              const countryName = parts.join(' ') || uni.country;
+
+              return (
+                <tr
+                  key={uni.id}
+                  onClick={() => onRowClick(uni)}
+                  className="h-[72px] border-b border-border/50 hover:bg-secondary/40 cursor-pointer transition-colors group even:bg-muted/10"
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="font-display text-base font-bold tracking-wide text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                        {uni.name}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddProgram && onAddProgram(uni);
+                        }}
+                        title="Add another program for this university"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-0.5 line-clamp-1 h-4">
+                      {uni.program || " "}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground/70 text-[10px] uppercase tracking-wider">
+                    <div className="flex items-center h-full">
+                      {flag && <span className="text-base mr-2">{flag}</span>}
+                      <span className="line-clamp-1">{countryName}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-muted-foreground/80">
+                    {uni.deadline
+                      ? format(parseISO(uni.deadline), "dd MMM yyyy")
+                      : "—"}
+                  </td>
+                  <td className="px-4 py-3">
+                    {days !== null ? (
+                      <span
+                        className={`text-xs font-semibold tabular-nums ${
+                          days < 0
+                            ? "text-red-500"
+                            : days <= 14
+                              ? "text-red-400"
+                              : days <= 30
+                                ? "text-amber-400"
+                                : "text-emerald-400"
+                        }`}
+                      >
+                        {days < 0
+                          ? `${Math.abs(days)}d ago`
+                          : days === 0
+                            ? "Today"
+                            : `${days}d`}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground/40">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span
+                      className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider border rounded-md ${cfg.badge}`}
+                      style={{ minWidth: "90px" }}
+                    >
+                      <span className={`w-1.5 h-1.5 ${cfg.dot}`} />
+                      {cfg.short}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-center">
+                      {uni.portal_url ? (
+                        <a
+                          href={uni.portal_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      ) : (
+                        <span
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRowClick(uni);
+                          }}
+                          className="text-muted-foreground/30 text-[11px] uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1 cursor-pointer"
+                        >
+                          <span className="text-lg leading-none mb-0.5">+</span> Add Portal
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            }
+
+            // Render Accordion layout for multi-program universities
+            const rep = group.representative;
+            const repDays = daysRemaining(rep.deadline);
+            const repCfg = statusConfig[rep.status] || statusConfig.researching;
+
+            const parts = group.country ? group.country.split(' ') : [];
             const flag = parts.length > 1 && /[\uD83C][\uDDE6-\uDDFF][\uD83C][\uDDE6-\uDDFF]|[\uD83C][\uDF00-\uDFFF]/.test(parts[parts.length - 1]) ? parts.pop() : '';
-            const countryName = parts.join(' ') || uni.country;
+            const countryName = parts.join(' ') || group.country;
+            const expanded = isExpanded(group.name);
 
             return (
-              <tr
-                key={uni.id}
-                onClick={() => onRowClick(uni)}
-                className="h-[72px] border-b border-border/50 hover:bg-secondary/40 cursor-pointer transition-colors group even:bg-muted/10"
-              >
-                <td className="px-4 py-3">
-                  <div className="font-display text-base font-bold tracking-wide text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                    {uni.name}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-0.5 line-clamp-1 h-4">
-                    {uni.program || " "}
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-muted-foreground/70 text-[10px] uppercase tracking-wider">
-                  <div className="flex items-center h-full">
-                    {flag && <span className="text-base mr-2">{flag}</span>}
-                    <span className="line-clamp-1">{countryName}</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-xs text-muted-foreground/80">
-                  {uni.deadline
-                    ? format(parseISO(uni.deadline), "dd MMM yyyy")
-                    : "—"}
-                </td>
-                <td className="px-4 py-3">
-                  {days !== null ? (
-                    <span
-                      className={`text-xs font-semibold tabular-nums ${
-                        days < 0
-                          ? "text-red-500"
-                          : days <= 14
-                            ? "text-red-400"
-                            : days <= 30
-                              ? "text-amber-400"
-                              : "text-emerald-400"
-                      }`}
-                    >
-                      {days < 0
-                        ? `${Math.abs(days)}d ago`
-                        : days === 0
-                          ? "Today"
-                          : `${days}d`}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground/40">—</span>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-center">
-                  <span
-                    className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider border rounded-md ${cfg.badge}`}
-                    style={{ minWidth: "90px" }}
-                  >
-                    <span className={`w-1.5 h-1.5 ${cfg.dot}`} />
-                    {cfg.short}
-                  </span>
-                </td>
-                <td className="px-4 py-3">
-                  <div className="flex justify-center">
-                    {uni.portal_url ? (
-                      <a
-                        href={uni.portal_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-muted-foreground hover:text-primary transition-colors"
+              <tr-group key={`group-${group.name}`} className="contents">
+                {/* Parent Row */}
+                <tr
+                  onClick={(e) => toggleGroup(group.name, e)}
+                  className="h-[72px] border-b border-border bg-secondary/15 hover:bg-secondary/25 cursor-pointer transition-colors group"
+                >
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => toggleGroup(group.name, e)}
+                        className="text-muted-foreground hover:text-foreground p-0.5 transition-colors"
                       >
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    ) : (
-                      <span className="text-muted-foreground/30 text-[11px] uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1">
-                        <span className="text-lg leading-none mb-0.5">+</span> Add Portal
+                        {expanded ? (
+                          <ChevronDown className="w-4 h-4" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4" />
+                        )}
+                      </button>
+                      <span className="font-display text-base font-bold tracking-wide text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                        {group.name}
                       </span>
+                      <span className="text-[10px] uppercase tracking-widest text-muted-foreground bg-secondary border border-border px-2 py-0.5 rounded font-semibold font-mono">
+                        {group.items.length} Programs
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted-foreground/60 mt-0.5 line-clamp-1 h-4 pl-7">
+                      Multiple applications active
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground/70 text-[10px] uppercase tracking-wider">
+                    <div className="flex items-center h-full">
+                      {flag && <span className="text-base mr-2">{flag}</span>}
+                      <span className="line-clamp-1">{countryName}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-muted-foreground/80">
+                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground/40 mr-1.5 font-mono">Next:</span>
+                    {rep.deadline
+                      ? format(parseISO(rep.deadline), "dd MMM yyyy")
+                      : "—"}
+                  </td>
+                  <td className="px-4 py-3">
+                    {repDays !== null ? (
+                      <span
+                        className={`text-xs font-semibold tabular-nums ${
+                          repDays < 0
+                            ? "text-red-500"
+                            : repDays <= 14
+                              ? "text-red-400"
+                              : repDays <= 30
+                                ? "text-amber-400"
+                                : "text-emerald-400"
+                        }`}
+                      >
+                        {repDays < 0
+                          ? `${Math.abs(repDays)}d ago`
+                          : repDays === 0
+                            ? "Today"
+                            : `${repDays}d`}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground/40">—</span>
                     )}
-                  </div>
-                </td>
-              </tr>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <span
+                      className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider border rounded-md ${repCfg.badge}`}
+                      style={{ minWidth: "90px" }}
+                    >
+                      <span className={`w-1.5 h-1.5 ${repCfg.dot}`} />
+                      {repCfg.short}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => onAddProgram && onAddProgram(rep)}
+                        className="text-muted-foreground hover:text-primary transition-colors text-[11px] uppercase tracking-wider flex items-center gap-1 font-semibold"
+                      >
+                        <span className="text-lg leading-none mb-0.5">+</span> Add Program
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+
+                {/* Child Rows */}
+                {expanded &&
+                  group.items.map((uni) => {
+                    const days = daysRemaining(uni.deadline);
+                    const cfg = statusConfig[uni.status] || statusConfig.researching;
+
+                    return (
+                      <tr
+                        key={uni.id}
+                        onClick={() => onRowClick(uni)}
+                        className="h-[60px] border-b border-border/30 hover:bg-secondary/20 bg-secondary/5 cursor-pointer transition-colors group"
+                      >
+                        <td className="pl-11 pr-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-muted-foreground/30 font-mono text-sm select-none">└</span>
+                            <span className="font-medium text-foreground/90 group-hover:text-primary transition-colors text-sm line-clamp-1">
+                              {uni.program || "General Application"}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          {/* Empty spacer to align with parent columns */}
+                        </td>
+                        <td className="px-4 py-3 text-xs text-muted-foreground/75">
+                          {uni.deadline
+                            ? format(parseISO(uni.deadline), "dd MMM yyyy")
+                            : "—"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {days !== null ? (
+                            <span
+                              className={`text-xs font-medium tabular-nums ${
+                                days < 0
+                                  ? "text-red-500/80"
+                                  : days <= 14
+                                    ? "text-red-400/80"
+                                    : days <= 30
+                                      ? "text-amber-400/80"
+                                      : "text-emerald-400/80"
+                              }`}
+                            >
+                              {days < 0
+                                ? `${Math.abs(days)}d ago`
+                                : days === 0
+                                  ? "Today"
+                                  : `${days}d`}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground/30">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span
+                            className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider border rounded-md ${cfg.badge}`}
+                            style={{ minWidth: "90px" }}
+                          >
+                            <span className={`w-1.5 h-1.5 ${cfg.dot}`} />
+                            {cfg.short}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex justify-center">
+                            {uni.portal_url ? (
+                              <a
+                                href={uni.portal_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="text-muted-foreground hover:text-primary transition-colors"
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                              </a>
+                            ) : (
+                              <span
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onRowClick(uni);
+                                }}
+                                className="text-muted-foreground/30 text-[11px] uppercase tracking-wider hover:text-primary transition-colors flex items-center gap-1 cursor-pointer"
+                              >
+                                <span className="text-lg leading-none mb-0.5">+</span> Add Portal
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tr-group>
             );
           })}
-          {sorted.length === 0 && (
+          {groups.length === 0 && (
             <tr>
               <td
                 colSpan={6}
@@ -176,3 +430,4 @@ export default function UniversityTable({ universities, onRowClick }) {
     </div>
   );
 }
+
