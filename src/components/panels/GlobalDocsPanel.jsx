@@ -33,7 +33,7 @@ export default function GlobalDocsPanel({
   };
 
   return (
-    <div className="w-full md:w-[300px] border-l border-border bg-card flex-shrink-0 flex flex-col h-full">
+    <div className="fixed md:relative inset-y-0 right-0 z-50 md:z-auto w-full md:w-[300px] border-l border-border bg-card flex-shrink-0 flex flex-col h-full shadow-2xl md:shadow-none">
       <div className="px-4 py-3 border-b border-border flex items-center justify-between">
         <div className="flex items-center gap-2">
           <FileText className="w-4 h-4 text-primary" />

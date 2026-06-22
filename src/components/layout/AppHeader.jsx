@@ -47,7 +47,7 @@ export default function AppHeader({
             }`}
           >
             <Table2 className="w-3.5 h-3.5" />
-            Table
+            <span className="hidden sm:inline">Table</span>
           </button>
           <button
             onClick={() => setView("kanban")}
@@ -58,7 +58,7 @@ export default function AppHeader({
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5" />
-            Kanban
+            <span className="hidden sm:inline">Kanban</span>
           </button>
           <button
             onClick={() => setView("calendar")}
@@ -79,7 +79,7 @@ export default function AppHeader({
               <line x1="8" y1="2" x2="8" y2="6" />
               <line x1="3" y1="10" x2="21" y2="10" />
             </svg>
-            Calendar
+            <span className="hidden sm:inline">Calendar</span>
           </button>
         </div>
         <div className="ml-4 pl-4 border-l border-border flex items-center">
