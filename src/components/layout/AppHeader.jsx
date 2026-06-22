@@ -1,6 +1,6 @@
 import { LayoutGrid, Table2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UserButton } from "@clerk/clerk-react";
+import { UserButton, useUser } from "@clerk/clerk-react";
 
 export default function AppHeader({
   view,
@@ -8,6 +8,24 @@ export default function AppHeader({
   onToggleGlobalDocs,
   showGlobalDocs,
 }) {
+  const { user } = useUser();
+  const rawName = user?.firstName || "Abhishek";
+  const firstName = rawName.toUpperCase();
+
+  const getGreeting = () => {
+    const hr = new Date().toLocaleTimeString('en-US', {
+      timeZone: 'Asia/Kolkata',
+      hour12: false,
+      hour: '2-digit',
+    });
+    const hour = parseInt(hr, 10);
+    if (hour < 12) return "GOOD MORNING";
+    if (hour < 17) return "GOOD AFTERNOON";
+    return "GOOD EVENING";
+  };
+
+  const greeting = getGreeting();
+
   return (
     <header className="border-b border-border px-6 py-4 flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -17,7 +35,7 @@ export default function AppHeader({
         </h1>
         <div className="flex flex-col ml-2 hidden sm:flex">
           <span className="text-muted-foreground text-[10px] tracking-widest uppercase">
-            Application Tracker
+            {greeting}, {firstName}<span className="text-primary font-bold">.</span>
           </span>
           <span className="text-xs font-medium text-foreground">
             {new Intl.DateTimeFormat('en-IN', {
