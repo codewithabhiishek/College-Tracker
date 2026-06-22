@@ -17,13 +17,13 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
     }
   };
 
-  const isExpanded = (groupName) => expandedGroups[groupName] !== false;
+  const isExpanded = (groupName) => !!expandedGroups[groupName];
 
   const toggleGroup = (groupName, e) => {
     e.stopPropagation();
     setExpandedGroups((prev) => ({
       ...prev,
-      [groupName]: prev[groupName] === false ? true : false,
+      [groupName]: !prev[groupName],
     }));
   };
 
