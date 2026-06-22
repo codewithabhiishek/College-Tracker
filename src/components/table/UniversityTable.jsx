@@ -1,10 +1,10 @@
 import { useState, Fragment } from "react";
 import { format, parseISO } from "date-fns";
-import { ArrowUpDown, ExternalLink, ChevronDown, ChevronRight, Plus } from "lucide-react";
+import { ArrowUpDown, ExternalLink, ChevronDown, ChevronRight, Plus, Pencil, Trash2 } from "lucide-react";
 import { statusConfig } from "@/lib/statusConfig";
 import { daysRemaining } from "@/lib/dateUtils";
 
-export default function UniversityTable({ universities, onRowClick, onAddProgram }) {
+export default function UniversityTable({ universities, onRowClick, onAddProgram, onEdit, onDelete }) {
   const [sortKey, setSortKey] = useState("deadline");
   const [sortDir, setSortDir] = useState("asc");
   const [expandedGroups, setExpandedGroups] = useState({});
@@ -114,6 +114,9 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
             <th className="px-4 py-3 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
               Portal
             </th>
+            <th className="px-4 py-3 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -147,7 +150,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                           onAddProgram && onAddProgram(uni);
                         }}
                         title="Add another program for this university"
-                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-muted-foreground hover:text-primary transition-colors"
+                        className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
@@ -224,6 +227,24 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                       )}
                     </div>
                   </td>
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex justify-center gap-1.5">
+                      <button
+                        onClick={() => onEdit && onEdit(uni)}
+                        title="Edit Application"
+                        className="p-1.5 text-muted-foreground hover:text-primary hover:border-border transition-colors border border-transparent rounded cursor-pointer"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => onDelete && onDelete(uni)}
+                        title="Delete Application"
+                        className="p-1.5 text-muted-foreground hover:text-destructive hover:border-border transition-colors border border-transparent rounded cursor-pointer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               );
             }
@@ -249,7 +270,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                     <div className="flex items-center gap-2">
                       <button
                         onClick={(e) => toggleGroup(group.name, e)}
-                        className="text-muted-foreground hover:text-foreground p-0.5 transition-colors"
+                        className="text-muted-foreground hover:text-foreground p-0.5 transition-colors cursor-pointer"
                       >
                         {expanded ? (
                           <ChevronDown className="w-4 h-4" />
@@ -312,13 +333,16 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                       {repCfg.short}
                     </span>
                   </td>
+                  <td className="px-4 py-3">
+                    {/* Empty portal column for parent */}
+                  </td>
                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                     <div className="flex justify-center">
                       <button
                         onClick={() => onAddProgram && onAddProgram(rep)}
-                        className="text-muted-foreground hover:text-primary transition-colors text-[11px] uppercase tracking-wider flex items-center gap-1 font-semibold"
+                        className="text-muted-foreground hover:text-primary transition-colors text-[11px] uppercase tracking-wider flex items-center gap-1 font-semibold cursor-pointer"
                       >
-                        <span className="text-lg leading-none mb-0.5">+</span> Add Program
+                        <Plus className="w-3.5 h-3.5" /> Add Program
                       </button>
                     </div>
                   </td>
@@ -409,6 +433,24 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                             )}
                           </div>
                         </td>
+                        <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex justify-center gap-1.5">
+                            <button
+                              onClick={() => onEdit && onEdit(uni)}
+                              title="Edit Application"
+                              className="p-1.5 text-muted-foreground hover:text-primary hover:border-border transition-colors border border-transparent rounded cursor-pointer"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => onDelete && onDelete(uni)}
+                              title="Delete Application"
+                              className="p-1.5 text-muted-foreground hover:text-destructive hover:border-border transition-colors border border-transparent rounded cursor-pointer"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     );
                   })}
@@ -418,7 +460,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
           {groups.length === 0 && (
             <tr>
               <td
-                colSpan={6}
+                colSpan={7}
                 className="px-4 py-12 text-center text-muted-foreground text-xs uppercase tracking-widest"
               >
                 No universities added yet. Click "Add University" to start.
@@ -430,4 +472,5 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
     </div>
   );
 }
+
 

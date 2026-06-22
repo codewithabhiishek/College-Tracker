@@ -214,6 +214,17 @@ export default function Dashboard() {
     setFormOpen(true);
   };
 
+  const handleEditUni = (uni) => {
+    setEditingUni(uni);
+    setFormOpen(true);
+  };
+
+  const handleDeleteUniDirect = (uni) => {
+    if (confirm(`Are you sure you want to delete ${uni.program || "this application"} at ${uni.name}?`)) {
+      deleteUni.mutate(uni.id);
+    }
+  };
+
 
 
   // Keep selectedUni in sync with latest data
@@ -280,6 +291,8 @@ export default function Dashboard() {
                   universities={filteredUnis}
                   onRowClick={handleRowClick}
                   onAddProgram={handleAddProgram}
+                  onEdit={handleEditUni}
+                  onDelete={handleDeleteUniDirect}
                 />
               )}
               {view === "kanban" && (
