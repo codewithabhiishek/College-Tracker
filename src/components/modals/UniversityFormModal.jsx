@@ -44,6 +44,8 @@ export default function UniversityFormModal({
   const isEdit = !!university;
 
   useEffect(() => {
+    if (!open) return;
+
     if (university) {
       setForm({
         name: university.name || "",
@@ -66,7 +68,7 @@ export default function UniversityFormModal({
     } else {
       setForm({ ...emptyForm, deadline: initialDate || "" });
     }
-  }, [university, open, initialDate, prefillUni]);
+  }, [open, university?.id, prefillUni?.name, initialDate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
