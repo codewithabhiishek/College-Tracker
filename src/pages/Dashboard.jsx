@@ -314,6 +314,12 @@ export default function Dashboard() {
                 is_ready: false,
               })
             }
+            onUpdate={(id, name) =>
+              updateGlobalDoc.mutate({
+                id,
+                data: { doc_name: name },
+              })
+            }
             onDelete={(id) => deleteGlobalDoc.mutate(id)}
             onClose={() => setShowGlobalDocs(false)}
           />
