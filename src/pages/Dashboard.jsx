@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 import AppHeader from "@/components/layout/AppHeader";
 import SummaryStats from "@/components/stats/SummaryStats";
@@ -326,11 +327,55 @@ export default function Dashboard() {
           {/* Content */}
           <main className="flex-1 overflow-hidden relative">
           {(unisIsLoading || docsIsLoading) ? (
-            <div className="p-8 space-y-4 animate-pulse">
-              <div className="h-10 bg-secondary/30 rounded w-full"></div>
-              <div className="h-16 bg-secondary/20 rounded w-full"></div>
-              <div className="h-16 bg-secondary/10 rounded w-full"></div>
-              <div className="h-16 bg-secondary/5 rounded w-full"></div>
+            <div className="p-6 flex flex-col h-full space-y-4 select-none">
+              {/* Table search + filter bar skeleton */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border border-border/40 p-4 bg-card/10">
+                <div className="h-8 bg-secondary/40 w-full sm:w-64 animate-pulse animate-shimmer" />
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <div className="h-8 bg-secondary/40 w-full sm:w-28 animate-pulse animate-shimmer" />
+                  <div className="h-8 bg-secondary/40 w-full sm:w-28 animate-pulse animate-shimmer" />
+                </div>
+              </div>
+
+              {/* Table skeleton */}
+              <div className="border border-border bg-card/15 flex-1 flex flex-col overflow-hidden">
+                {/* Table Header skeleton */}
+                <div className="grid grid-cols-6 border-b border-border bg-secondary/20 px-6 py-3.5 text-[10px] uppercase font-display tracking-widest text-muted-foreground/50">
+                  <div>University</div>
+                  <div>Program</div>
+                  <div>Country</div>
+                  <div>Deadline</div>
+                  <div>Status</div>
+                  <div className="text-center">Portal</div>
+                </div>
+
+                {/* Table Rows skeleton */}
+                <div className="flex-1 divide-y divide-border/40 overflow-hidden">
+                  {[...Array(6)].map((_, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.35, delay: idx * 0.06 }}
+                      className="grid grid-cols-6 px-6 py-4 items-center animate-shimmer"
+                    >
+                      <div className="h-4 bg-secondary/40 rounded-sm w-3/4 animate-pulse" />
+                      <div className="h-4 bg-secondary/35 rounded-sm w-5/6 animate-pulse" />
+                      <div className="h-3 bg-secondary/30 rounded-sm w-12 animate-pulse" />
+                      <div className="h-3.5 bg-secondary/30 rounded-sm w-16 animate-pulse" />
+                      
+                      {/* Status badge skeleton */}
+                      <div className="h-5 border border-border/30 bg-secondary/20 rounded-none w-20 flex items-center px-2 gap-1.5 animate-pulse">
+                        <div className="w-1.5 h-1.5 bg-secondary/45 rounded-full" />
+                        <div className="h-2 bg-secondary/35 rounded-sm w-10" />
+                      </div>
+
+                      {/* Portal icon skeleton */}
+                      <div className="h-4 bg-secondary/30 rounded-sm w-4 justify-self-center animate-pulse" />
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
             </div>
           ) : (
             <>
