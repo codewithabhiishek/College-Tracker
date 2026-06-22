@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { format, parseISO } from "date-fns";
 import { ArrowUpDown, ExternalLink, ChevronDown, ChevronRight, Plus } from "lucide-react";
 import { statusConfig } from "@/lib/statusConfig";
@@ -239,7 +239,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
             const expanded = isExpanded(group.name);
 
             return (
-              <tr-group key={`group-${group.name}`} className="contents">
+              <Fragment key={`group-${group.name}`}>
                 {/* Parent Row */}
                 <tr
                   onClick={(e) => toggleGroup(group.name, e)}
@@ -412,7 +412,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                       </tr>
                     );
                   })}
-              </tr-group>
+              </Fragment>
             );
           })}
           {groups.length === 0 && (
