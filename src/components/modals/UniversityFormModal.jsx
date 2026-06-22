@@ -146,12 +146,49 @@ export default function UniversityFormModal({
               <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">
                 Deadline
               </Label>
-              <Input
-                type="date"
-                value={form.deadline}
-                onChange={(e) => update("deadline", e.target.value)}
-                className="mt-1 bg-background border-border text-sm"
-              />
+              <div className="flex gap-2 mt-1">
+                <Select
+                  value={
+                    form.deadline === "9999-12-30"
+                      ? "not-decided"
+                      : form.deadline === "9999-12-31"
+                      ? "not-out"
+                      : form.deadline
+                      ? "custom"
+                      : "empty"
+                  }
+                  onValueChange={(val) => {
+                    if (val === "not-decided") {
+                      update("deadline", "9999-12-30");
+                    } else if (val === "not-out") {
+                      update("deadline", "9999-12-31");
+                    } else if (val === "empty") {
+                      update("deadline", "");
+                    } else {
+                      update("deadline", new Date().toISOString().split("T")[0]);
+                    }
+                  }}
+                >
+                  <SelectTrigger className="w-[140px] bg-background border-border text-xs">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="empty">Not Specified</SelectItem>
+                    <SelectItem value="not-decided">Not Decided</SelectItem>
+                    <SelectItem value="not-out">Not Out Yet</SelectItem>
+                    <SelectItem value="custom">Specific Date</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {form.deadline !== "9999-12-30" && form.deadline !== "9999-12-31" && form.deadline !== "" && (
+                  <Input
+                    type="date"
+                    value={form.deadline}
+                    onChange={(e) => update("deadline", e.target.value)}
+                    className="flex-1 bg-background border-border text-sm h-9"
+                  />
+                )}
+              </div>
             </div>
             <div>
               <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">

@@ -7,8 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { statusConfig } from "@/lib/statusConfig";
-import { daysRemaining } from "@/lib/dateUtils";
-import { format, parseISO } from "date-fns";
+import { daysRemaining, formatDeadline } from "@/lib/dateUtils";
 import { ExternalLink, Pencil, Trash2 } from "lucide-react";
 
 export default function UniversityDetailModal({
@@ -53,11 +52,7 @@ export default function UniversityDetailModal({
             <InfoRow label="Country" value={university.country} />
             <InfoRow
               label="Deadline"
-              value={
-                university.deadline
-                  ? format(parseISO(university.deadline), "dd MMM yyyy")
-                  : "—"
-              }
+              value={formatDeadline(university.deadline)}
             />
             <InfoRow
               label="Days Remaining"

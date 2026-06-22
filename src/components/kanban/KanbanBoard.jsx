@@ -1,6 +1,5 @@
 import { statusConfig, ALL_STATUSES } from "@/lib/statusConfig";
-import { daysRemaining } from "@/lib/dateUtils";
-import { format, parseISO } from "date-fns";
+import { daysRemaining, formatDeadline } from "@/lib/dateUtils";
 import { ExternalLink } from "lucide-react";
 
 function KanbanCard({ uni, onClick }) {
@@ -43,7 +42,7 @@ function KanbanCard({ uni, onClick }) {
       </div>
       {uni.deadline && (
         <div className="text-[10px] text-muted-foreground/60 mt-1">
-          {format(parseISO(uni.deadline), "dd MMM yyyy")}
+          {formatDeadline(uni.deadline)}
         </div>
       )}
       <div className="flex items-center justify-between mt-2">

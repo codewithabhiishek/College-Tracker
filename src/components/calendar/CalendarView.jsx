@@ -13,7 +13,7 @@ export default function CalendarView({ universities, onEventClick, onDateSelect 
 
   const events = useMemo(() => {
     return universities
-      .filter((u) => u.deadline)
+      .filter((u) => u.deadline && !u.deadline.startsWith("9999-12"))
       .map((u) => {
         const deadlineDate = new Date(u.deadline);
         return {

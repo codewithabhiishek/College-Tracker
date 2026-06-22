@@ -1,8 +1,7 @@
 import { useState, Fragment } from "react";
-import { format, parseISO } from "date-fns";
 import { ArrowUpDown, ExternalLink, ChevronDown, ChevronRight, Plus, Pencil, Trash2 } from "lucide-react";
 import { statusConfig } from "@/lib/statusConfig";
-import { daysRemaining } from "@/lib/dateUtils";
+import { daysRemaining, formatDeadline } from "@/lib/dateUtils";
 
 export default function UniversityTable({ universities, onRowClick, onAddProgram, onEdit, onDelete }) {
   const [sortKey, setSortKey] = useState("deadline");
@@ -166,9 +165,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                     </div>
                   </td>
                   <td className="px-4 py-3 text-xs text-muted-foreground/80">
-                    {uni.deadline
-                      ? format(parseISO(uni.deadline), "dd MMM yyyy")
-                      : "—"}
+                    {formatDeadline(uni.deadline)}
                   </td>
                   <td className="px-4 py-3">
                     {days !== null ? (
@@ -297,9 +294,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                   </td>
                   <td className="px-4 py-3 text-xs text-muted-foreground/80">
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground/40 mr-1.5 font-mono">Next:</span>
-                    {rep.deadline
-                      ? format(parseISO(rep.deadline), "dd MMM yyyy")
-                      : "—"}
+                    {formatDeadline(rep.deadline)}
                   </td>
                   <td className="px-4 py-3">
                     {repDays !== null ? (
@@ -374,9 +369,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                           {/* Empty spacer to align with parent columns */}
                         </td>
                         <td className="px-4 py-2 text-[11px] font-mono text-muted-foreground/60">
-                          {uni.deadline
-                            ? format(parseISO(uni.deadline), "dd MMM yyyy")
-                            : "—"}
+                          {formatDeadline(uni.deadline)}
                         </td>
                         <td className="px-4 py-2">
                           {days !== null ? (
