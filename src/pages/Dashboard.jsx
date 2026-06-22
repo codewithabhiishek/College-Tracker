@@ -151,8 +151,22 @@ export default function Dashboard() {
       if (!res.ok) throw new Error("Failed to update document");
       return res.json();
     },
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["globalDocs"] }),
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries({ queryKey: ["globalDocs"] });
+      const previousDocs = queryClient.getQueryData(["globalDocs"]);
+      queryClient.setQueryData(["globalDocs"], (old = []) =>
+        old.map((doc) => (doc.id === id ? { ...doc, ...data } : doc))
+      );
+      return { previousDocs };
+    },
+    onError: (err, newDoc, context) => {
+      if (context?.previousDocs) {
+        queryClient.setQueryData(["globalDocs"], context.previousDocs);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["globalDocs"] });
+    },
   });
 
   const deleteGlobalDoc = useMutation({
