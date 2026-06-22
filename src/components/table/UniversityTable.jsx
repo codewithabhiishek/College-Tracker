@@ -1,9 +1,9 @@
 import { useState, Fragment } from "react";
-import { ArrowUpDown, ExternalLink, ChevronDown, ChevronRight, Plus, Pencil, Trash2 } from "lucide-react";
+import { ArrowUpDown, ExternalLink, ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { statusConfig } from "@/lib/statusConfig";
 import { daysRemaining, formatDeadline } from "@/lib/dateUtils";
 
-export default function UniversityTable({ universities, onRowClick, onAddProgram, onEdit, onDelete }) {
+export default function UniversityTable({ universities, onRowClick, onAddProgram, onDelete }) {
   const [sortKey, setSortKey] = useState("deadline");
   const [sortDir, setSortDir] = useState("asc");
   const [expandedGroups, setExpandedGroups] = useState({});
@@ -236,14 +236,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                     </div>
                   </td>
                   <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex justify-center gap-1.5">
-                      <button
-                        onClick={() => onEdit && onEdit(uni)}
-                        title="Edit Application"
-                        className="p-1.5 text-muted-foreground hover:text-primary hover:border-border transition-colors border border-transparent rounded cursor-pointer"
-                      >
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
+                    <div className="flex justify-center">
                       <button
                         onClick={() => onDelete && onDelete(uni)}
                         title="Delete Application"
@@ -440,14 +433,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                           </div>
                         </td>
                         <td className="px-4 py-2" onClick={(e) => e.stopPropagation()}>
-                          <div className="flex justify-center gap-1">
-                            <button
-                              onClick={() => onEdit && onEdit(uni)}
-                              title="Edit Application"
-                              className="p-1 text-muted-foreground hover:text-primary hover:border-border transition-colors border border-transparent rounded cursor-pointer"
-                            >
-                              <Pencil className="w-3 h-3" />
-                            </button>
+                          <div className="flex justify-center">
                             <button
                               onClick={() => onDelete && onDelete(uni)}
                               title="Delete Application"

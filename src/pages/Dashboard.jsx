@@ -276,7 +276,6 @@ export default function Dashboard() {
                   universities={filteredUnis}
                   onRowClick={handleRowClick}
                   onAddProgram={handleAddProgram}
-                  onEdit={handleEditUni}
                   onDelete={handleDeleteUniDirect}
                 />
               )}
