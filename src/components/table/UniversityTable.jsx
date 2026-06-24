@@ -121,14 +121,14 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-sm table-fixed min-w-[950px]">
         <thead>
           <tr className="border-b border-border bg-secondary/30">
-            <SortHeader label="University / Program" sortKeyName="name" />
-            <SortHeader label="Country" sortKeyName="country" />
-            <SortHeader label="Deadline" sortKeyName="deadline" />
+            <SortHeader label="University / Program" sortKeyName="name" className="w-[28%]" />
+            <SortHeader label="Country" sortKeyName="country" className="w-[13%]" />
+            <SortHeader label="Deadline" sortKeyName="deadline" className="w-[13%]" />
             <th
-              className="px-4 py-3 text-left text-[10px] uppercase tracking-widest text-muted-foreground cursor-pointer hover:text-foreground"
+              className="px-4 py-3 text-left text-[10px] uppercase tracking-widest text-muted-foreground cursor-pointer hover:text-foreground w-[10%]"
               onClick={() => handleSort("deadline")}
             >
               <span className="flex items-center gap-1">
@@ -138,12 +138,12 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                 />
               </span>
             </th>
-            <SortHeader label="Fee" sortKeyName="application_fee" align="center" />
-            <SortHeader label="Status" sortKeyName="status" align="center" />
-            <th className="px-4 py-3 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
+            <SortHeader label="Fee" sortKeyName="application_fee" align="center" className="w-[11%]" />
+            <SortHeader label="Status" sortKeyName="status" align="center" className="w-[12%]" />
+            <th className="px-4 py-3 text-center text-[10px] uppercase tracking-widest text-muted-foreground w-[7%]">
               Portal
             </th>
-            <th className="px-4 py-3 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
+            <th className="px-4 py-3 text-center text-[10px] uppercase tracking-widest text-muted-foreground w-[6%]">
               Actions
             </th>
           </tr>
