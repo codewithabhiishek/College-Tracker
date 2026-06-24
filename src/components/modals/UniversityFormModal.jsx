@@ -279,20 +279,20 @@ export default function UniversityFormModal({
                 onChange={(e) => update("application_fee", e.target.value)}
                 className="mt-1 bg-background border-border text-sm"
               />
+              <div className="flex items-center gap-2 mt-2.5">
+                <Checkbox
+                  checked={form.fee_paid}
+                  onCheckedChange={(v) => update("fee_paid", v)}
+                  id="fee_paid"
+                />
+                <Label
+                  htmlFor="fee_paid"
+                  className="text-xs text-muted-foreground cursor-pointer select-none"
+                >
+                  Fee Paid
+                </Label>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Checkbox
-              checked={form.fee_paid}
-              onCheckedChange={(v) => update("fee_paid", v)}
-              id="fee_paid"
-            />
-            <Label
-              htmlFor="fee_paid"
-              className="text-xs text-muted-foreground cursor-pointer"
-            >
-              Fee Paid
-            </Label>
           </div>
           <div>
             <Label className="text-[10px] uppercase tracking-widest text-muted-foreground">
