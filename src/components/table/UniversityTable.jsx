@@ -290,8 +290,8 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
             const expanded = isExpanded(group.name);
 
             // Compute fee summary stats for the group
-            const totalFee = group.items.reduce((sum, item) => sum + (item.application_fee || 0), 0);
-            const totalPaid = group.items.reduce((sum, item) => sum + (item.fee_paid ? (item.application_fee || 0) : 0), 0);
+            const totalFee = group.items.reduce((sum, item) => sum + (item.application_fee != null ? Number(item.application_fee) : 0), 0);
+            const totalPaid = group.items.reduce((sum, item) => sum + (item.fee_paid && item.application_fee != null ? Number(item.application_fee) : 0), 0);
             const hasFee = group.items.some(item => item.application_fee != null);
             const allPaid = group.items.every(item => item.application_fee == null || item.fee_paid);
 
