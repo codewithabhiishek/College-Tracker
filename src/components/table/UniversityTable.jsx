@@ -216,7 +216,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                     {uni.application_fee != null ? (
                       <div className="inline-flex flex-col items-center gap-1">
                         <span className="font-mono text-xs font-semibold text-foreground">
-                          ${Number(uni.application_fee).toFixed(2)}
+                          €{Number(uni.application_fee).toFixed(2)}
                         </span>
                         {uni.fee_paid ? (
                           <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider border rounded border-emerald-400/30 text-emerald-400 bg-emerald-400/10">
@@ -355,15 +355,15 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                     {hasFee ? (
                       <div className="inline-flex flex-col items-center gap-1">
                         <span className="font-mono text-xs font-semibold text-foreground">
-                          ${totalFee.toFixed(2)}
+                          €{totalFee.toFixed(2)}
                         </span>
                         {allPaid ? (
                           <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider border rounded border-emerald-400/30 text-emerald-400 bg-emerald-400/10">
-                            All Paid
+                            Paid
                           </span>
                         ) : (
                           <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider border rounded border-amber-400/30 text-amber-400 bg-amber-400/10">
-                            ${totalPaid.toFixed(2)} Paid
+                            Unpaid
                           </span>
                         )}
                       </div>
@@ -480,7 +480,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                               {uni.application_fee != null ? (
                                 <div className="inline-flex items-center gap-2">
                                   <span className="font-mono text-xs font-semibold text-foreground">
-                                    ${Number(uni.application_fee).toFixed(2)}
+                                    €{Number(uni.application_fee).toFixed(2)}
                                   </span>
                                   {uni.fee_paid ? (
                                     <span className="inline-flex items-center px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider border rounded border-emerald-400/30 text-emerald-400 bg-emerald-400/10">

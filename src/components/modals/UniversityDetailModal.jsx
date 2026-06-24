@@ -85,7 +85,7 @@ export default function UniversityDetailModal({
               value={
                 <span className="flex items-center gap-1">
                   {university.application_fee != null
-                    ? `$${university.application_fee}`
+                    ? `€${university.application_fee}`
                     : "—"}
                   {university.fee_paid && (
                     <Badge
