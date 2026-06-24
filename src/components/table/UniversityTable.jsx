@@ -1,6 +1,6 @@
 import { useState, Fragment } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpDown, ExternalLink, ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { ArrowUpDown, ExternalLink, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { statusConfig } from "@/lib/statusConfig";
 import { daysRemaining, formatDeadline } from "@/lib/dateUtils";
 
@@ -73,6 +73,10 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
         av = av || "9999-12-32";
         bv = bv || "9999-12-32";
       }
+      if (sortKey === "application_fee") {
+        av = av === null || av === undefined ? -1 : Number(av);
+        bv = bv === null || bv === undefined ? -1 : Number(bv);
+      }
       if (av < bv) return sortDir === "asc" ? -1 : 1;
       if (av > bv) return sortDir === "asc" ? 1 : -1;
       return 0;
@@ -87,6 +91,10 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
     if (sortKey === "deadline") {
       av = av || "9999-12-32";
       bv = bv || "9999-12-32";
+    }
+    if (sortKey === "application_fee") {
+      av = av === null || av === undefined ? -1 : Number(av);
+      bv = bv === null || bv === undefined ? -1 : Number(bv);
     }
     if (av < bv) return sortDir === "asc" ? -1 : 1;
     if (av > bv) return sortDir === "asc" ? 1 : -1;
@@ -130,6 +138,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                 />
               </span>
             </th>
+            <SortHeader label="Fee" sortKeyName="application_fee" align="center" />
             <SortHeader label="Status" sortKeyName="status" align="center" />
             <th className="px-4 py-3 text-center text-[10px] uppercase tracking-widest text-muted-foreground">
               Portal
@@ -204,6 +213,26 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                     )}
                   </td>
                   <td className="px-4 py-3 text-center">
+                    {uni.application_fee != null ? (
+                      <div className="inline-flex flex-col items-center gap-1">
+                        <span className="font-mono text-xs font-semibold text-foreground">
+                          ${Number(uni.application_fee).toFixed(2)}
+                        </span>
+                        {uni.fee_paid ? (
+                          <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider border rounded border-emerald-400/30 text-emerald-400 bg-emerald-400/10">
+                            Paid
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider border rounded border-amber-400/30 text-amber-400 bg-amber-400/10">
+                            Unpaid
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground/40 font-mono text-xs">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-center">
                     <span
                       className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider border rounded-md ${cfg.badge}`}
                       style={{ minWidth: "90px" }}
@@ -250,9 +279,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                   </td>
                 </tr>
               );
-            }
-
-            // Render Accordion layout for multi-program universities
+            }            // Render Accordion layout for multi-program universities
             const rep = group.representative;
             const repDays = daysRemaining(rep.deadline);
             const repCfg = statusConfig[rep.status] || statusConfig.researching;
@@ -261,6 +288,12 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
             const flag = parts.length > 1 && /[\uD83C][\uDDE6-\uDDFF][\uD83C][\uDDE6-\uDDFF]|[\uD83C][\uDF00-\uDFFF]/.test(parts[parts.length - 1]) ? parts.pop() : '';
             const countryName = parts.join(' ') || group.country;
             const expanded = isExpanded(group.name);
+
+            // Compute fee summary stats for the group
+            const totalFee = group.items.reduce((sum, item) => sum + (item.application_fee || 0), 0);
+            const totalPaid = group.items.reduce((sum, item) => sum + (item.fee_paid ? (item.application_fee || 0) : 0), 0);
+            const hasFee = group.items.some(item => item.application_fee != null);
+            const allPaid = group.items.every(item => item.application_fee == null || item.fee_paid);
 
             return (
               <Fragment key={`group-${group.name}`}>
@@ -316,6 +349,26 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                       </span>
                     ) : (
                       <span className="text-muted-foreground/40">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {hasFee ? (
+                      <div className="inline-flex flex-col items-center gap-1">
+                        <span className="font-mono text-xs font-semibold text-foreground">
+                          ${totalFee.toFixed(2)}
+                        </span>
+                        {allPaid ? (
+                          <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider border rounded border-emerald-400/30 text-emerald-400 bg-emerald-400/10">
+                            All Paid
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider border rounded border-amber-400/30 text-amber-400 bg-amber-400/10">
+                            ${totalPaid.toFixed(2)} Paid
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground/40 font-mono text-xs">—</span>
                     )}
                   </td>
                   <td className="px-4 py-3 text-center">
@@ -424,6 +477,34 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
                               transition={{ duration: 0.2 }}
                               className="flex justify-center items-center px-4 border-b border-border/10 overflow-hidden"
                             >
+                              {uni.application_fee != null ? (
+                                <div className="inline-flex items-center gap-2">
+                                  <span className="font-mono text-xs font-semibold text-foreground">
+                                    ${Number(uni.application_fee).toFixed(2)}
+                                  </span>
+                                  {uni.fee_paid ? (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider border rounded border-emerald-400/30 text-emerald-400 bg-emerald-400/10">
+                                      Paid
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider border rounded border-amber-400/30 text-amber-400 bg-amber-400/10">
+                                      Unpaid
+                                    </span>
+                                  )}
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground/30 font-mono text-xs">—</span>
+                              )}
+                            </motion.div>
+                          </td>
+                          <td className="p-0 text-center">
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 52, opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="flex justify-center items-center px-4 border-b border-border/10 overflow-hidden"
+                            >
                               <span
                                 className={`inline-flex items-center justify-center gap-1 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider border rounded-md opacity-85 ${cfg.badge}`}
                                 style={{ minWidth: "80px" }}
@@ -495,7 +576,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
           {groups.length === 0 && (
             <tr>
               <td
-                colSpan={7}
+                colSpan={8}
                 className="px-4 py-12 text-center text-muted-foreground text-xs uppercase tracking-widest"
               >
                 No universities added yet. Click "Add University" to start.

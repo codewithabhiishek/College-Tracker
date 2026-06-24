@@ -31,6 +31,47 @@ const emptyForm = {
   notes: "",
 };
 
+const formatUniversityName = (name) => {
+  if (!name) return "";
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((word) => {
+      if (word.length === 0) return "";
+      // Handle abbreviations like TU, MIT, USA, etc. (all uppercase, length > 1)
+      if (word === word.toUpperCase() && word.length > 1) {
+        return word;
+      }
+      const lower = word.toLowerCase();
+      const exceptions = [
+        "of",
+        "and",
+        "in",
+        "the",
+        "at",
+        "for",
+        "with",
+        "on",
+        "by",
+        "to",
+        "a",
+        "an",
+        "de",
+        "di",
+        "la",
+        "von",
+        "zu",
+      ];
+      if (exceptions.includes(lower)) {
+        return lower;
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(" ")
+    // Ensure the very first character of the name is always capitalized
+    .replace(/^\w/, (c) => c.toUpperCase());
+};
+
 export default function UniversityFormModal({
   open,
   onOpenChange,
@@ -80,6 +121,7 @@ export default function UniversityFormModal({
     e.preventDefault();
     const data = {
       ...form,
+      name: formatUniversityName(form.name),
       application_fee:
         form.application_fee !== "" ? Number(form.application_fee) : null,
       program: form.program || null,
