@@ -8,6 +8,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Dashboard from "@/pages/Dashboard";
+import Landing from "@/pages/Landing";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
@@ -24,10 +25,25 @@ function App() {
           <Routes>
             <Route path="/login/*" element={<Login />} />
             <Route path="/register/*" element={<Register />} />
+            <Route path="/landing" element={<Landing />} />
             
-            {/* Protected Routes */}
+            {/* Main & Dashboard Routes */}
             <Route
               path="/"
+              element={
+                <>
+                  <SignedIn>
+                    <Navigate to="/dashboard" replace />
+                  </SignedIn>
+                  <SignedOut>
+                    <Landing />
+                  </SignedOut>
+                </>
+              }
+            />
+            
+            <Route
+              path="/dashboard"
               element={
                 <>
                   <SignedIn>
