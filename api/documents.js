@@ -24,43 +24,56 @@ export default async function handler(req, res) {
       const { rows } = await sql`SELECT * FROM global_documents WHERE user_id = ${userId} ORDER BY created_at ASC`;
       return res.status(200).json(rows);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      console.error("GET /api/documents error:", error);
+      return res.status(500).json({ error: "Failed to fetch documents" });
     }
   }
 
   if (req.method === 'POST') {
     try {
-      const { doc_name, is_ready } = req.body;
+      const { doc_name, is_ready } = req.body || {};
+      if (!doc_name || typeof doc_name !== 'string') {
+        return res.status(400).json({ error: "Document name is required" });
+      }
+      const safeDocName = doc_name.trim().slice(0, 200);
+      const safeReady = Boolean(is_ready);
+
       const { rows } = await sql`
         INSERT INTO global_documents (user_id, doc_name, is_ready)
-        VALUES (${userId}, ${doc_name}, ${is_ready})
+        VALUES (${userId}, ${safeDocName}, ${safeReady})
         RETURNING *;
       `;
       return res.status(201).json(rows[0]);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      console.error("POST /api/documents error:", error);
+      return res.status(500).json({ error: "Failed to create document" });
     }
   }
 
   if (req.method === 'PUT') {
     try {
-      const { id, is_ready } = req.body;
+      const { id, is_ready } = req.body || {};
+      if (!id) return res.status(400).json({ error: "Document ID is required" });
+      const safeReady = Boolean(is_ready);
+
       const { rows } = await sql`
         UPDATE global_documents
-        SET is_ready = ${is_ready}
+        SET is_ready = ${safeReady}
         WHERE id = ${id} AND user_id = ${userId}
         RETURNING *;
       `;
       if (rows.length === 0) return res.status(404).json({ error: "Not found or not authorized" });
       return res.status(200).json(rows[0]);
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      console.error("PUT /api/documents error:", error);
+      return res.status(500).json({ error: "Failed to update document" });
     }
   }
 
   if (req.method === 'DELETE') {
     try {
-      const { id } = req.body;
+      const { id } = req.body || {};
+      if (!id) return res.status(400).json({ error: "Document ID is required" });
       const { rows } = await sql`
         DELETE FROM global_documents
         WHERE id = ${id} AND user_id = ${userId}
@@ -69,7 +82,8 @@ export default async function handler(req, res) {
       if (rows.length === 0) return res.status(404).json({ error: "Not found or not authorized" });
       return res.status(200).json({ message: "Deleted successfully" });
     } catch (error) {
-      return res.status(500).json({ error: error.message });
+      console.error("DELETE /api/documents error:", error);
+      return res.status(500).json({ error: "Failed to delete document" });
     }
   }
 

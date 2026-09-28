@@ -2,18 +2,13 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@clerk/clerk-react";
 import {
-  GraduationCap,
   Kanban,
   Calendar,
   FileText,
   TrendingUp,
   ShieldCheck,
-  ArrowRight,
-  Sparkles,
   Check,
-  Layers,
   Clock,
-  Award,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
