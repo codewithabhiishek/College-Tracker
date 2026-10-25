@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, X, FileText, Pencil, Check } from "lucide-react";
+import { haptics } from "@/lib/haptics";
 
 export default function GlobalDocsPanel({
   docs,
@@ -21,6 +22,7 @@ export default function GlobalDocsPanel({
 
   const handleAdd = () => {
     if (!newName.trim()) return;
+    haptics.tap();
     onAdd(newName.trim().toUpperCase());
     setNewName("");
   };
@@ -28,6 +30,7 @@ export default function GlobalDocsPanel({
   const handleSaveEdit = () => {
     const trimmed = editingName.trim().toUpperCase();
     if (trimmed && trimmed !== docs.find((d) => d.id === editingId)?.doc_name) {
+      haptics.select();
       onUpdate(editingId, trimmed);
     }
     setEditingId(null);
@@ -54,7 +57,10 @@ export default function GlobalDocsPanel({
             {readyCount}/{docs.length}
           </span>
           <button
-            onClick={onClose}
+            onClick={() => {
+              haptics.tap();
+              onClose();
+            }}
             className="text-muted-foreground hover:text-foreground transition-colors md:hidden"
           >
             <X className="w-4 h-4" />
@@ -70,7 +76,10 @@ export default function GlobalDocsPanel({
           >
             <Checkbox
               checked={doc.is_ready}
-              onCheckedChange={() => onToggle(doc)}
+              onCheckedChange={() => {
+                haptics.select();
+                onToggle(doc);
+              }}
             />
             
             {editingId === doc.id ? (
@@ -109,6 +118,7 @@ export default function GlobalDocsPanel({
               <div className="flex items-center">
                 <button
                   onClick={() => {
+                    haptics.tap();
                     setEditingId(doc.id);
                     setEditingName(doc.doc_name);
                   }}
@@ -117,7 +127,10 @@ export default function GlobalDocsPanel({
                   <Pencil className="w-3 h-3" />
                 </button>
                 <button
-                  onClick={() => onDelete(doc.id)}
+                  onClick={() => {
+                    haptics.delete();
+                    onDelete(doc.id);
+                  }}
                   className="text-muted-foreground/30 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 p-1 cursor-pointer"
                 >
                   <Trash2 className="w-3 h-3" />

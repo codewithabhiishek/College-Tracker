@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpDown, ExternalLink, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { statusConfig } from "@/lib/statusConfig";
 import { daysRemaining, formatDeadline } from "@/lib/dateUtils";
+import { haptics } from "@/lib/haptics";
 
 export default function UniversityTable({ universities, onRowClick, onAddProgram, onDelete }) {
   const [sortKey, setSortKey] = useState("deadline");
@@ -10,6 +11,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
   const [expandedGroups, setExpandedGroups] = useState({});
 
   const handleSort = (key) => {
+    haptics.select();
     if (sortKey === key) {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     } else {
@@ -22,6 +24,7 @@ export default function UniversityTable({ universities, onRowClick, onAddProgram
 
   const toggleGroup = (groupName, e) => {
     e.stopPropagation();
+    haptics.tap();
     setExpandedGroups((prev) => ({
       ...prev,
       [groupName]: !prev[groupName],

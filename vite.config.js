@@ -26,7 +26,7 @@ export default defineConfig({
           if (id.includes("node_modules/@clerk/")) {
             return "vendor-clerk";
           }
-          if (id.includes("node_modules/react-big-calendar/") || id.includes("node_modules/moment/")) {
+          if (id.includes("node_modules/react-big-calendar/")) {
             return "vendor-calendar";
           }
           if (id.includes("node_modules/framer-motion/")) {

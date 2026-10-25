@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { LayoutGrid, Table2, FileText } from "lucide-react";
+import { LayoutGrid, Table2, FileText, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserButton, useUser } from "@clerk/clerk-react";
+import { haptics } from "@/lib/haptics";
 
 export default function AppHeader({
   view,
@@ -56,6 +57,16 @@ export default function AppHeader({
 
   const greeting = getGreeting();
 
+  const handleViewChange = (newView) => {
+    haptics.select();
+    setView(newView);
+  };
+
+  const handleToggleDocs = () => {
+    haptics.tap();
+    onToggleGlobalDocs();
+  };
+
   return (
     <header className="border-b border-border px-6 py-4 flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -76,10 +87,21 @@ export default function AppHeader({
         </div>
       </div>
       <div className="flex items-center gap-2">
+        <a
+          href="https://abhiishek.is-a.dev/"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => haptics.tap()}
+          className="hidden lg:inline-flex items-center gap-1 text-[10px] font-mono tracking-widest text-muted-foreground hover:text-primary transition-colors border border-border px-2.5 py-1.5 uppercase hover:border-primary/50"
+          title="Creator Portfolio"
+        >
+          <span>BY ABHISHEK</span>
+          <ExternalLink className="w-2.5 h-2.5" />
+        </a>
         <Button
           variant={showGlobalDocs ? "default" : "outline"}
           size="sm"
-          onClick={onToggleGlobalDocs}
+          onClick={handleToggleDocs}
           className="text-xs uppercase tracking-wider gap-1.5 h-8"
         >
           <FileText className="w-3.5 h-3.5" />
@@ -87,7 +109,7 @@ export default function AppHeader({
         </Button>
         <div className="flex border border-border">
           <button
-            onClick={() => setView("table")}
+            onClick={() => handleViewChange("table")}
             className={`px-3 py-1.5 text-xs uppercase tracking-wider flex items-center gap-1.5 transition-colors ${
               view === "table"
                 ? "bg-primary text-primary-foreground"
@@ -98,7 +120,7 @@ export default function AppHeader({
             <span className="hidden sm:inline">Table</span>
           </button>
           <button
-            onClick={() => setView("kanban")}
+            onClick={() => handleViewChange("kanban")}
             className={`px-3 py-1.5 text-xs uppercase tracking-wider flex items-center gap-1.5 border-l border-border transition-colors ${
               view === "kanban"
                 ? "bg-primary text-primary-foreground"
@@ -109,7 +131,7 @@ export default function AppHeader({
             <span className="hidden sm:inline">Kanban</span>
           </button>
           <button
-            onClick={() => setView("calendar")}
+            onClick={() => handleViewChange("calendar")}
             className={`px-3 py-1.5 text-xs uppercase tracking-wider flex items-center gap-1.5 border-l border-border transition-colors ${
               view === "calendar"
                 ? "bg-primary text-primary-foreground"

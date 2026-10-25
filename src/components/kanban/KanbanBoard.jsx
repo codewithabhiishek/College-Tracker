@@ -1,13 +1,17 @@
 import { statusConfig, ALL_STATUSES } from "@/lib/statusConfig";
 import { daysRemaining, formatDeadline } from "@/lib/dateUtils";
 import { ExternalLink } from "lucide-react";
+import { haptics } from "@/lib/haptics";
 
 function KanbanCard({ uni, onClick }) {
   const days = daysRemaining(uni.deadline);
 
   return (
     <div
-      onClick={() => onClick(uni)}
+      onClick={() => {
+        haptics.tap();
+        onClick(uni);
+      }}
       className="border border-border bg-background p-3 cursor-grab active:cursor-grabbing hover:border-primary/40 transition-colors group"
     >
       <div className="font-display font-medium text-sm text-foreground group-hover:text-primary transition-colors">

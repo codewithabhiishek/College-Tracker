@@ -15,6 +15,7 @@ import UniversityFormModal from "@/components/modals/UniversityFormModal";
 
 import GlobalDocsPanel from "@/components/panels/GlobalDocsPanel";
 import { useAuth } from "@clerk/clerk-react";
+import { haptics } from "@/lib/haptics";
 
 export default function Dashboard() {
   const [view, setView] = useState("table");
@@ -24,12 +25,16 @@ export default function Dashboard() {
   const [prefillUni, setPrefillUni] = useState(null);
   const [initialDate, setInitialDate] = useState(null);
 
-  const { getToken } = useAuth();
+  const { getToken, userId } = useAuth();
   const queryClient = useQueryClient();
+
+  // Multi-user scoped queries
+  const uniQueryKey = useMemo(() => ["universities", userId || "anonymous"], [userId]);
+  const docsQueryKey = useMemo(() => ["globalDocs", userId || "anonymous"], [userId]);
 
   // Fetch Universities
   const { data: universities = [], refetch: refetchUnis, isLoading: unisIsLoading } = useQuery({
-    queryKey: ["universities"],
+    queryKey: uniQueryKey,
     queryFn: async () => {
       const token = await getToken();
       const res = await fetch("/api/universities", {
@@ -38,11 +43,12 @@ export default function Dashboard() {
       if (!res.ok) throw new Error("Failed to fetch universities");
       return res.json();
     },
+    enabled: !!userId,
   });
 
   // Fetch Global Documents
   const { data: globalDocs = [], isLoading: docsIsLoading } = useQuery({
-    queryKey: ["globalDocs"],
+    queryKey: docsQueryKey,
     queryFn: async () => {
       const token = await getToken();
       const res = await fetch("/api/documents", {
@@ -51,6 +57,7 @@ export default function Dashboard() {
       if (!res.ok) throw new Error("Failed to fetch documents");
       return res.json();
     },
+    enabled: !!userId,
   });
 
   // Mutations
@@ -69,10 +76,10 @@ export default function Dashboard() {
       return res.json();
     },
     onMutate: async (newUni) => {
-      await queryClient.cancelQueries({ queryKey: ["universities"] });
-      const previousUnis = queryClient.getQueryData(["universities"]);
+      await queryClient.cancelQueries({ queryKey: uniQueryKey });
+      const previousUnis = queryClient.getQueryData(uniQueryKey);
       const tempId = `temp-${Math.random()}`;
-      queryClient.setQueryData(["universities"], (old = []) => [
+      queryClient.setQueryData(uniQueryKey, (old = []) => [
         ...old,
         { id: tempId, ...newUni, created_at: new Date().toISOString() },
       ]);
@@ -83,17 +90,19 @@ export default function Dashboard() {
       return { previousUnis };
     },
     onError: (err, newUni, context) => {
+      haptics.error();
       if (context?.previousUnis) {
-        queryClient.setQueryData(["universities"], context.previousUnis);
+        queryClient.setQueryData(uniQueryKey, context.previousUnis);
       }
       toast.error("Failed to add university");
       setFormOpen(true);
     },
     onSuccess: () => {
+      haptics.success();
       toast.success("University added");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["universities"] });
+      queryClient.invalidateQueries({ queryKey: uniQueryKey });
     },
   });
 
@@ -112,9 +121,9 @@ export default function Dashboard() {
       return res.json();
     },
     onMutate: async (updatedUni) => {
-      await queryClient.cancelQueries({ queryKey: ["universities"] });
-      const previousUnis = queryClient.getQueryData(["universities"]);
-      queryClient.setQueryData(["universities"], (old = []) =>
+      await queryClient.cancelQueries({ queryKey: uniQueryKey });
+      const previousUnis = queryClient.getQueryData(uniQueryKey);
+      queryClient.setQueryData(uniQueryKey, (old = []) =>
         old.map((uni) => (uni.id === updatedUni.id ? { ...uni, ...updatedUni } : uni))
       );
       setFormOpen(false);
@@ -124,17 +133,19 @@ export default function Dashboard() {
       return { previousUnis };
     },
     onError: (err, updatedUni, context) => {
+      haptics.error();
       if (context?.previousUnis) {
-        queryClient.setQueryData(["universities"], context.previousUnis);
+        queryClient.setQueryData(uniQueryKey, context.previousUnis);
       }
       toast.error("Failed to update university");
       setFormOpen(true);
     },
     onSuccess: () => {
+      haptics.statusChange();
       toast.success("University updated");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["universities"] });
+      queryClient.invalidateQueries({ queryKey: uniQueryKey });
     },
   });
 
@@ -153,24 +164,26 @@ export default function Dashboard() {
       return res.json();
     },
     onMutate: async (id) => {
-      await queryClient.cancelQueries({ queryKey: ["universities"] });
-      const previousUnis = queryClient.getQueryData(["universities"]);
-      queryClient.setQueryData(["universities"], (old = []) =>
+      await queryClient.cancelQueries({ queryKey: uniQueryKey });
+      const previousUnis = queryClient.getQueryData(uniQueryKey);
+      queryClient.setQueryData(uniQueryKey, (old = []) =>
         old.filter((uni) => uni.id !== id)
       );
       return { previousUnis };
     },
     onError: (err, id, context) => {
+      haptics.error();
       if (context?.previousUnis) {
-        queryClient.setQueryData(["universities"], context.previousUnis);
+        queryClient.setQueryData(uniQueryKey, context.previousUnis);
       }
       toast.error("Failed to delete university");
     },
     onSuccess: () => {
+      haptics.delete();
       toast.success("University deleted");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["universities"] });
+      queryClient.invalidateQueries({ queryKey: uniQueryKey });
     },
   });
 
@@ -186,8 +199,11 @@ export default function Dashboard() {
       if (!res.ok) throw new Error("Failed to create document");
       return res.json();
     },
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["globalDocs"] }),
+    onSuccess: () => {
+      haptics.success();
+      queryClient.invalidateQueries({ queryKey: docsQueryKey });
+    },
+    onError: () => haptics.error(),
   });
 
   const updateGlobalDoc = useMutation({
@@ -202,20 +218,24 @@ export default function Dashboard() {
       return res.json();
     },
     onMutate: async ({ id, data }) => {
-      await queryClient.cancelQueries({ queryKey: ["globalDocs"] });
-      const previousDocs = queryClient.getQueryData(["globalDocs"]);
-      queryClient.setQueryData(["globalDocs"], (old = []) =>
+      await queryClient.cancelQueries({ queryKey: docsQueryKey });
+      const previousDocs = queryClient.getQueryData(docsQueryKey);
+      queryClient.setQueryData(docsQueryKey, (old = []) =>
         old.map((doc) => (doc.id === id ? { ...doc, ...data } : doc))
       );
       return { previousDocs };
     },
     onError: (err, newDoc, context) => {
+      haptics.error();
       if (context?.previousDocs) {
-        queryClient.setQueryData(["globalDocs"], context.previousDocs);
+        queryClient.setQueryData(docsQueryKey, context.previousDocs);
       }
     },
+    onSuccess: () => {
+      haptics.select();
+    },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["globalDocs"] });
+      queryClient.invalidateQueries({ queryKey: docsQueryKey });
     },
   });
 
@@ -230,18 +250,23 @@ export default function Dashboard() {
       if (!res.ok) throw new Error("Failed to delete document");
       return res.json();
     },
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["globalDocs"] }),
+    onSuccess: () => {
+      haptics.delete();
+      queryClient.invalidateQueries({ queryKey: docsQueryKey });
+    },
+    onError: () => haptics.error(),
   });
 
   // Handlers
   const handleRowClick = (uni) => {
+    haptics.tap();
     setEditingUni(uni);
     setPrefillUni(null);
     setFormOpen(true);
   };
 
   const handleDateSelect = (date) => {
+    haptics.select();
     // Make sure we pass an ISO string without timezone shifts
     const localIso = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
       .toISOString()
@@ -260,6 +285,7 @@ export default function Dashboard() {
   };
 
   const handleAddProgram = (uni) => {
+    haptics.tap();
     setEditingUni(null);
     setInitialDate(null);
     setPrefillUni({ name: uni.name, country: uni.country, deadline: uni.deadline });
@@ -267,11 +293,13 @@ export default function Dashboard() {
   };
 
   const handleEditUni = (uni) => {
+    haptics.tap();
     setEditingUni(uni);
     setFormOpen(true);
   };
 
   const handleDeleteUniDirect = (uni) => {
+    haptics.medium();
     if (confirm(`Are you sure you want to delete ${uni.program || "this application"} at ${uni.name}?`)) {
       deleteUni.mutate(uni.id);
     }

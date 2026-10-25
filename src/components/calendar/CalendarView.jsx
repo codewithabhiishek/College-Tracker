@@ -1,12 +1,22 @@
 import { useMemo, useState } from 'react';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import { format } from 'date-fns';
+import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { enUS } from 'date-fns/locale/en-US';
 import { X } from 'lucide-react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { statusConfig } from '@/lib/statusConfig';
 
-const localizer = momentLocalizer(moment);
+const locales = {
+  'en-US': enUS,
+};
+
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
+});
 
 export default function CalendarView({ universities, onEventClick, onDateSelect }) {
   const [showMoreData, setShowMoreData] = useState(null);

@@ -92,6 +92,14 @@ export default function Landing() {
           </Link>
 
           <div className="flex items-center gap-3">
+            <a
+              href="https://abhiishek.is-a.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:inline-flex items-center gap-1 text-[10px] uppercase font-bold tracking-widest text-muted-foreground hover:text-primary border border-border/80 px-2.5 py-1.5 transition-colors hover:border-primary/50"
+            >
+              Portfolio ↗
+            </a>
             {isSignedIn ? (
               <Link to="/dashboard">
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none px-5 py-2 text-xs font-bold uppercase tracking-widest border border-primary shadow-[2px_2px_0_#9353ff]">
@@ -323,9 +331,28 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="font-heading font-bold text-foreground">COLLEGE.TRACKER</span>
-            <span>· Built by Abhishek © 2026</span>
+            <span>
+              · Built by{" "}
+              <a
+                href="https://abhiishek.is-a.dev/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-foreground hover:text-primary font-semibold underline underline-offset-4 decoration-primary/40 transition-colors"
+              >
+                Abhishek
+              </a>{" "}
+              © 2026
+            </span>
           </div>
           <div className="flex items-center gap-5">
+            <a
+              href="https://abhiishek.is-a.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors font-medium"
+            >
+              Portfolio ↗
+            </a>
             <Link to={isSignedIn ? "/dashboard" : "/login"} className="hover:text-primary transition-colors">
               {isSignedIn ? "Dashboard" : "Login"}
             </Link>

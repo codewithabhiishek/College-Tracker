@@ -2,7 +2,8 @@ import { Toaster } from "sonner";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClientInstance } from "@/lib/query-client";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import { ClerkProvider, SignedIn, SignedOut } from "@clerk/clerk-react";
+import { useEffect, useRef } from "react";
+import { ClerkProvider, SignedIn, SignedOut, useAuth } from "@clerk/clerk-react";
 import PageNotFound from "./lib/PageNotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import Login from "@/pages/Login";
@@ -16,10 +17,26 @@ if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key");
 }
 
+function AuthSync() {
+  const { userId } = useAuth();
+  const prevUserIdRef = useRef(userId);
+
+  useEffect(() => {
+    // When switching accounts or logging out, purge cached data to avoid cross-user state leaks
+    if (prevUserIdRef.current !== undefined && prevUserIdRef.current !== userId) {
+      queryClientInstance.clear();
+    }
+    prevUserIdRef.current = userId;
+  }, [userId]);
+
+  return null;
+}
+
 function App() {
   return (
     <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/login">
       <QueryClientProvider client={queryClientInstance}>
+        <AuthSync />
         <Router>
           <ScrollToTop />
           <Routes>
