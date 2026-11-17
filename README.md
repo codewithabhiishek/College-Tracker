@@ -8,8 +8,8 @@ Developed by [Abhishek](https://abhiishek.is-a.dev/) · [Portfolio](https://abhi
 
 ## ✨ Key Features & Architecture
 
-- **Multi-User Data Isolation:** Complete account segmentation with Clerk-authenticated `userId` scoping across TanStack Query keys (`["universities", userId]`, `["globalDocs", userId]`), server-side parameterized PostgreSQL queries (`WHERE user_id = $1`), and automatic client-side cache purging upon account switch or sign-out (`AuthSync`).
-- **Tactile Mobile Haptics:** Custom mobile haptic vibration feedback engine (`src/lib/haptics.js`) with patterns for card taps, sorting selections, status changes, document toggles, and item deletions with SSR-safe browser detection.
+- **Multi-User Data Isolation:** Complete account segmentation with Clerk-authenticated `userId` scoping across TanStack Query keys (`["universities", userId]`, `["globalDocs", userId]`), server-side parameterized PostgreSQL queries (`WHERE user_id = $1`), user-scoped local preferences storage (`src/lib/storageService.js`), and automatic client-side cache purging upon account switch or sign-out (`AuthSync`).
+- **Tactile Mobile Haptics:** Custom mobile haptic vibration feedback engine (`src/lib/haptics.js` and `src/lib/hapticsService.js`) with patterns for card taps, sorting selections, status changes, document toggles, and item deletions with SSR-safe browser detection.
 - **0 npm Vulnerabilities:** Clean security audit status with pure `date-fns` calendar localization replacing legacy dependencies and automated selector parser overrides.
 - **Application Dashboard:** Multi-view workflow with Table View (with multi-program collapsible groups), Kanban Board, and interactive Calendar View.
 - **Shared Documents Vault:** Global and per-application tracking for Statements of Purpose, Transcripts, Recommendations, and Portfolios.
@@ -64,7 +64,7 @@ npm run build
 ```bash
 npm test
 ```
-Runs the automated unit test suites (`tests/dataIsolation.test.mjs`, `tests/haptics.test.mjs`, `tests/tracker.test.mjs`) via Node's native test runner.
+Runs the 20 automated unit tests across all test suites (`tests/dataIsolation.test.mjs`, `tests/haptics.test.mjs`, `tests/storageService.test.mjs`, `tests/tracker.test.mjs`) via Node's native test runner.
 
 ## 👤 Author
 

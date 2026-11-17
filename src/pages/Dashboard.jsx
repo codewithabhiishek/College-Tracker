@@ -16,16 +16,29 @@ import UniversityFormModal from "@/components/modals/UniversityFormModal";
 import GlobalDocsPanel from "@/components/panels/GlobalDocsPanel";
 import { useAuth } from "@clerk/clerk-react";
 import { haptics } from "@/lib/haptics";
+import { getUserPreference, setUserPreference } from "@/lib/storageService";
 
 export default function Dashboard() {
-  const [view, setView] = useState("table");
+  const { getToken, userId } = useAuth();
+  const [view, setView] = useState(() => getUserPreference("preferred_view", userId, "table"));
   const [formOpen, setFormOpen] = useState(false);
   const [showGlobalDocs, setShowGlobalDocs] = useState(false);
   const [editingUni, setEditingUni] = useState(null);
   const [prefillUni, setPrefillUni] = useState(null);
   const [initialDate, setInitialDate] = useState(null);
 
-  const { getToken, userId } = useAuth();
+  const handleSetView = useCallback((newView) => {
+    setView(newView);
+    setUserPreference("preferred_view", userId, newView);
+  }, [userId]);
+
+  useEffect(() => {
+    const saved = getUserPreference("preferred_view", userId, null);
+    if (saved && saved !== view) {
+      setView(saved);
+    }
+  }, [userId]);
+
   const queryClient = useQueryClient();
 
   // Multi-user scoped queries
@@ -320,7 +333,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background flex flex-col">
       <AppHeader
         view={view}
-        setView={setView}
+        setView={handleSetView}
         showGlobalDocs={showGlobalDocs}
         onToggleGlobalDocs={() => setShowGlobalDocs((s) => !s)}
       />
@@ -507,7 +520,25 @@ export default function Dashboard() {
         initialDate={initialDate}
       />
 
-
+      {/* Footer attribution */}
+      <footer className="mt-auto py-4 px-4 sm:px-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-muted-foreground font-mono">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-foreground tracking-wider uppercase">COLLEGE.TRACKER</span>
+          <span>// ADMISSIONS RADAR</span>
+        </div>
+        <p>
+          CRAFTED BY{" "}
+          <a
+            href="https://abhiishek.is-a.dev/"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => haptics.tap()}
+            className="text-foreground hover:text-primary font-bold underline underline-offset-4 decoration-primary/40 transition-colors"
+          >
+            ABHISHEK ↗
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }
